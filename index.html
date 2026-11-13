@@ -1,16 +1,76 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10191d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="PTIV Walkman"><meta name="description" content="P.T. Architech local-first music player"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icon.svg"><title>PTIV Walkman — Offline</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10191d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="PTIV Walkman"><meta name="description" content="P.T. Architech local-first music player"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="apple-touch-icon" href="./icon-192.png"><title>PTIV Walkman — Offline</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1115;--panel:#121e22;--line:#354a4d;--ink:#f6f6e6;--muted:#adc1bc;--lime:#c3f771;--orange:#efa66b}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,system-ui,sans-serif}body{background:radial-gradient(ellipse at 12% -15%,#32544c 0%,#0b1115 64%);padding-bottom:calc(25px + env(safe-area-inset-bottom))}main{max-width:700px;margin:auto;padding:18px 16px}.eyebrow{color:var(--lime);font-size:11px;letter-spacing:.22em;font-weight:700}h1{font-size:clamp(34px,8vw,50px);line-height:1.07;letter-spacing:-.055em;margin:9px 0}h2{font-size:17px;margin:0 0 10px}small,.hint{font-size:12px;color:var(--muted)}p{margin:8px 0 12px;color:var(--muted)}.tape{margin:18px 0 18px;border:2px solid #879d96;border-radius:16px;padding:16px;background:linear-gradient(150deg,#2b4142,#162528);box-shadow:inset 0 0 0 6px #112022,0 13px 30px #0006}.stripe{height:10px;border-radius:4px;background:repeating-linear-gradient(90deg,#c3f771 0 38px,#f2a867 38px 50px,#466e73 50px 73px)}.sticker{font:bold 17px/1.2 ui-monospace,monospace;margin:14px 3px;text-transform:uppercase}.wheels{display:flex;justify-content:center;align-items:center;gap:34px;border:3px solid #748f87;background:#0a1115;padding:15px;border-radius:10px}.wheel{height:74px;width:74px;border-radius:50%;border:11px dotted #a4b7a7;box-shadow:0 0 0 8px #324747;background:radial-gradient(circle,#101a1d 22%,#7a8a80 24% 29%,transparent 31%)}.spinning .wheel{animation:rotate 4s linear infinite}@keyframes rotate{to{transform:rotate(360deg)}}.panel{margin:16px 0;border:1px solid var(--line);background:#132024e8;border-radius:16px;padding:18px}.inline{display:flex;gap:9px;flex-wrap:wrap}.btn{appearance:none;border:0;padding:13px 16px;background:var(--lime);color:#101b15;font-weight:750;font-size:15px;border-radius:12px;cursor:pointer;touch-action:manipulation}.btn.alt{background:#304347;color:var(--ink);border:1px solid #50676c}.btn.tiny{font-size:12px;padding:8px 10px}.btn:disabled{opacity:.5}.file{display:none}button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}.notice{color:var(--lime);min-height:2em;white-space:pre-wrap;font-size:13px;margin-top:11px}.warning{color:var(--orange)}.controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:17px 0}.controls .btn{font-size:22px;min-width:55px}.controls .big{min-width:135px}input[type=range]{width:100%;accent-color:var(--lime)}.timing{display:flex;justify-content:space-between;color:var(--muted);font:12px ui-monospace,monospace}.titleNow{font-weight:800;font-size:23px;min-height:2em;margin:7px 0}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.tab{padding:12px;background:#263a3d;border:1px solid #43575a;border-radius:12px;color:var(--ink);font-weight:700}.tab.active{background:var(--lime);color:#152219}.search{width:100%;background:#0b1518;border:1px solid #536a6a;color:var(--ink);padding:13px;border-radius:11px;margin:4px 0 8px;font:inherit}ul,ol{list-style:none;margin:0;padding:0}.song{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 0;border-bottom:1px solid #304346}.song .no{min-width:26px;color:#aebfbd;font:12px ui-monospace,monospace}.song .name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}.song .sub{font-size:11px;color:var(--muted)}.song .state{font-size:11px;color:var(--orange)}.song.ready .state{color:var(--lime)}.song.playing{background:#253c36;border-radius:8px;padding-left:8px;padding-right:8px}.empty{padding:12px;color:var(--muted);text-align:center}.hidden{display:none!important}footer{font-size:12px;line-height:1.55;color:var(--muted);margin:20px 0}strong{color:var(--ink)}.badge{background:#364a4b;padding:2px 8px;border-radius:8px;color:var(--lime);font-size:11px}.meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}.meta span{font-size:12px;color:var(--muted)}.mode-controls{display:flex;gap:9px;flex-wrap:wrap;margin:6px 0}.mode-controls .btn{flex:1 1 165px;text-align:center}.mode-controls .btn.on{background:var(--lime);border-color:var(--lime);color:#101b15}.mode-note{margin:7px 0 2px;font-size:12px;color:var(--muted)}.deck-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:13px 2px 0}.deck-nav .btn{padding:6px 13px;font-size:22px}.deck-nav .deck-status{font-size:12px;letter-spacing:.1em;color:#c3f771;font-weight:800;text-transform:uppercase}.deck-face{min-height:170px;border-radius:12px;background:#0d1719;border:1px solid #48615c;padding:17px 13px}.deck-face h3{margin:0 0 10px;color:var(--lime);font-size:19px}.deck-face p{margin:8px 0;font-size:14px}.deck-lines{max-height:195px;overflow:auto;overscroll-behavior:contain}.deck-lines p{font-size:var(--lyric-font,20px);line-height:1.4;color:#d2dedd;margin:7px 0}.deck-lines p.current{color:var(--lime);font-weight:800}.deck-meta{font-size:14px;color:#c0ccc9}.deck-meta b{color:#f6f6e6}.deck-external{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deck-external a{display:inline-block;background:#304347;border:1px solid #526a69;padding:8px 11px;border-radius:9px;color:#e7f5ee;font-size:12px;text-decoration:none}.deck-external a:focus-visible{outline:2px solid var(--lime)}.deck-help{font-size:11px;color:#bacbc2;margin:9px 6px 0}.tape{touch-action:pan-y}.lyricbox{max-height:350px;overflow-y:auto;border:1px solid #3c5455;background:#0b1518;border-radius:13px;padding:13px 10px;overscroll-behavior:contain}.lyricline{font-size:var(--lyric-font,20px);line-height:1.6;padding:12px 13px;border-radius:10px;color:#a4b7b7;transition:color .15s,background .15s}.lyricline.active{background:#2a463b;color:var(--lime);font-weight:750}.lyricline.untimed{white-space:pre-wrap}.lyrics-info{font-size:12px;color:var(--muted);margin-top:12px}.lyrics-info.warning{color:var(--orange)}.lyrics-heading{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.lyrics-actions{margin:13px 0}.lyrics-empty{text-align:center;padding:30px 10px;color:var(--muted)}.lyric-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.lyric-tools label{font-size:14px;font-weight:700}.lyric-tools input{flex:1;min-width:120px}.lyric-tools output{font-size:13px;color:var(--lime);min-width:44px}.lyric-exports{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.lyric-exports .btn{font-size:13px;padding:10px 12px}
+:root{color-scheme:dark;--bg:#0b1115;--panel:#121e22;--line:#354a4d;--ink:#f6f6e6;--muted:#adc1bc;--lime:#c3f771;--orange:#efa66b}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,system-ui,sans-serif}body{background:radial-gradient(ellipse at 12% -15%,#32544c 0%,#0b1115 64%);padding-bottom:calc(25px + env(safe-area-inset-bottom))}main{max-width:700px;margin:auto;padding:18px 16px}.eyebrow{color:var(--lime);font-size:11px;letter-spacing:.22em;font-weight:700}h1{font-size:clamp(34px,8vw,50px);line-height:1.07;letter-spacing:-.055em;margin:9px 0}h2{font-size:17px;margin:0 0 10px}small,.hint{font-size:12px;color:var(--muted)}p{margin:8px 0 12px;color:var(--muted)}.tape{margin:18px 0 18px;border:2px solid #879d96;border-radius:16px;padding:16px;background:linear-gradient(150deg,#2b4142,#162528);box-shadow:inset 0 0 0 6px #112022,0 13px 30px #0006}.stripe{height:10px;border-radius:4px;background:repeating-linear-gradient(90deg,#c3f771 0 38px,#f2a867 38px 50px,#466e73 50px 73px)}.sticker{font:bold 17px/1.2 ui-monospace,monospace;margin:14px 3px;text-transform:uppercase}.wheels{display:flex;justify-content:center;align-items:center;gap:34px;border:3px solid #748f87;background:#0a1115;padding:15px;border-radius:10px}.wheel{height:74px;width:74px;border-radius:50%;border:11px dotted #a4b7a7;box-shadow:0 0 0 8px #324747;background:radial-gradient(circle,#101a1d 22%,#7a8a80 24% 29%,transparent 31%)}.spinning .wheel{animation:rotate 4s linear infinite}@keyframes rotate{to{transform:rotate(360deg)}}.panel{margin:16px 0;border:1px solid var(--line);background:#132024e8;border-radius:16px;padding:18px}.inline{display:flex;gap:9px;flex-wrap:wrap}.btn{appearance:none;border:0;padding:13px 16px;background:var(--lime);color:#101b15;font-weight:750;font-size:15px;border-radius:12px;cursor:pointer;touch-action:manipulation}.btn.alt{background:#304347;color:var(--ink);border:1px solid #50676c}.btn.tiny{font-size:12px;padding:8px 10px}.btn:disabled{opacity:.5}.file{display:none}button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}.notice{color:var(--lime);min-height:2em;white-space:pre-wrap;font-size:13px;margin-top:11px}.warning{color:var(--orange)}.controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:17px 0}.controls .btn{font-size:22px;min-width:55px}.controls .big{min-width:135px}input[type=range]{width:100%;accent-color:var(--lime)}.timing{display:flex;justify-content:space-between;color:var(--muted);font:12px ui-monospace,monospace}.titleNow{font-weight:800;font-size:23px;min-height:2em;margin:7px 0}.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0}.tab{padding:12px;background:#263a3d;border:1px solid #43575a;border-radius:12px;color:var(--ink);font-weight:700}.tab.active{background:var(--lime);color:#152219}.search{width:100%;background:#0b1518;border:1px solid #536a6a;color:var(--ink);padding:13px;border-radius:11px;margin:4px 0 8px;font:inherit}ul,ol{list-style:none;margin:0;padding:0}.song{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 0;border-bottom:1px solid #304346}.song .no{min-width:26px;color:#aebfbd;font:12px ui-monospace,monospace}.song .name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}.song .sub{font-size:11px;color:var(--muted)}.song .state{font-size:11px;color:var(--orange)}.song.ready .state{color:var(--lime)}.song.playing{background:#253c36;border-radius:8px;padding-left:8px;padding-right:8px}.empty{padding:12px;color:var(--muted);text-align:center}.hidden{display:none!important}footer{font-size:12px;line-height:1.55;color:var(--muted);margin:20px 0}strong{color:var(--ink)}.badge{background:#364a4b;padding:2px 8px;border-radius:8px;color:var(--lime);font-size:11px}.meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}.meta span{font-size:12px;color:var(--muted)}.mode-controls{display:flex;gap:9px;flex-wrap:wrap;margin:6px 0}.mode-controls .btn{flex:1 1 165px;text-align:center}.mode-controls .btn.on{background:var(--lime);border-color:var(--lime);color:#101b15}.mode-note{margin:7px 0 2px;font-size:12px;color:var(--muted)}.deck-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:13px 2px 0}.deck-nav .btn{padding:6px 13px;font-size:22px}.deck-nav .deck-status{font-size:12px;letter-spacing:.1em;color:#c3f771;font-weight:800;text-transform:uppercase}.deck-face{min-height:170px;border-radius:12px;background:#0d1719;border:1px solid #48615c;padding:17px 13px}.deck-face h3{margin:0 0 10px;color:var(--lime);font-size:19px}.deck-face p{margin:8px 0;font-size:14px}.deck-lines{max-height:195px;overflow:auto;overscroll-behavior:contain}.deck-lines p{font-size:var(--lyric-font,20px);line-height:1.4;color:#d2dedd;margin:7px 0}.deck-lines p.current{color:var(--lime);font-weight:800}.deck-meta{font-size:14px;color:#c0ccc9}.deck-meta b{color:#f6f6e6}.deck-external{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deck-external a{display:inline-block;background:#304347;border:1px solid #526a69;padding:8px 11px;border-radius:9px;color:#e7f5ee;font-size:12px;text-decoration:none}.deck-external a:focus-visible{outline:2px solid var(--lime)}.deck-help{font-size:11px;color:#bacbc2;margin:9px 6px 0}.tape{touch-action:pan-y}.lyricbox{max-height:350px;overflow-y:auto;border:1px solid #3c5455;background:#0b1518;border-radius:13px;padding:13px 10px;overscroll-behavior:contain}.lyricline{font-size:var(--lyric-font,20px);line-height:1.6;padding:12px 13px;border-radius:10px;color:#a4b7b7;transition:color .15s,background .15s}.lyricline.active{background:#2a463b;color:var(--lime);font-weight:750}.lyricline.untimed{white-space:pre-wrap}.lyrics-info{font-size:12px;color:var(--muted);margin-top:12px}.lyrics-info.warning{color:var(--orange)}.lyrics-heading{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.lyrics-actions{margin:13px 0}.lyrics-empty{text-align:center;padding:30px 10px;color:var(--muted)}.lyric-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.lyric-tools label{font-size:14px;font-weight:700}.lyric-tools input{flex:1;min-width:120px}.lyric-tools output{font-size:13px;color:var(--lime);min-width:44px}.lyric-exports{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.lyric-exports .btn{font-size:13px;padding:10px 12px}
+.viz-surface{border:1px solid #4c736d;border-radius:12px;background:#070f16;padding:8px;margin:8px 0;box-shadow:inset 0 0 18px #a2ff7c0f}
+.viz-surface canvas{display:block;width:100%;max-height:240px;aspect-ratio:16/6;border-radius:7px;background:#061118}
+.viz-options{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.viz-options select{background:#1a3337;border:1px solid #567b78;border-radius:9px;color:var(--ink);padding:8px;font:inherit}
+.viz-foot{font:12px/1.6 ui-monospace,monospace;color:#aebfbc;letter-spacing:.02em}
+.catalog-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0}
+.catalog-filters label{font-size:12px;color:var(--muted);display:block}
+.catalog-filters select,.catalog-filters input,.tags-editor input,.playlist-select{width:100%;font:inherit;color:var(--ink);background:#0c1a1e;border:1px solid #556d69;border-radius:9px;padding:10px 7px}
+.catalog-tools{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.catalog-counter{margin:9px 0;font-size:12px;color:var(--muted)}
+.catalog-item{padding:10px 0;border-bottom:1px solid #294044}
+.catalog-item-title{font-size:15px;font-weight:700;color:#eff6e4}
+.catalog-item-sub{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.catalog-item-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.catalog-item-actions .btn{font-size:12px;padding:8px 10px}
+.catalog-playable{border-left:3px solid #c3f771;padding-left:9px}
+.catalog-status{font-size:11px;color:var(--orange)}
+.tags-editor{border:1px solid #8baa7f;padding:14px;border-radius:14px;background:#19302b;margin:12px 0}
+.tags-editor .tag-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tags-editor label{display:block;font-size:12px;color:#c9ded1}
+.tags-editor p{font-size:12px}
+.catalog-notice{color:var(--orange);font-size:12px}
+@media(max-width:410px){main{padding:14px 10px}.panel{padding:13px}.tabs{gap:5px}.tab{font-size:12px;padding:11px 5px}.controls{gap:7px}.controls .btn{min-width:47px}.controls .big{min-width:95px}.deck-face{padding:12px 9px}}
+@media(prefers-reduced-motion:reduce){.spinning .wheel{animation:none}*{scroll-behavior:auto!important}}
 </style></head><body><main>
-<div class="eyebrow">P.T. ARCHITECH / PRIVATE LOCAL MUSIC</div><h1>PTIV WALKMAN</h1><small>Offline-first player · Music stays on this device</small>
-<div class="tape" id="tape" role="group" aria-label="Interactive cassette: triple tap or swipe horizontally to switch views"><div id="cassetteFace"><div class="stripe"></div><div class="sticker">GHOST IN THE WIRE<br><small>YOUR LOCAL LIBRARY / SIDE A+B</small></div><div class="wheels"><i class="wheel"></i><i class="wheel"></i></div></div><div class="deck-face hidden" id="deckFace" aria-live="polite"></div><div class="deck-nav"><button class="btn alt" id="deckPrev" type="button" aria-label="Previous cassette view">‹</button><span class="deck-status" id="deckStatus">1/4 · Cassette</span><button class="btn alt" id="deckNext" type="button" aria-label="Next cassette view">›</button></div><p class="deck-help">Swipe horizontally or triple-tap the cassette to switch views.</p></div><div class="inline" style="margin:0 3px 12px"><button class="btn alt tiny" id="copyBackTap" type="button">Copy iPhone Back Tap lyrics shortcut URL</button></div>
-<section class="panel"><h2>1. Add music from iPhone Files</h2><p class="hint">Choose files, or choose an entire folder. The web app can only see files you select. Audio is stored locally for offline playback when device storage permits; <strong>nothing is sent to the internet</strong>. For permanent imports, use the installed app opened from your Home Screen, or a regular Safari tab — <strong>not Private Browsing</strong>.</p><div class="inline"><button class="btn" id="pickFiles">Choose music files</button><button class="btn alt" id="pickFolder">Choose folder</button><button class="btn alt" id="pickZip">Import ZIP</button></div><input class="file" id="files" type="file" multiple accept="audio/*,.mp3,.m4a,.wav,.flac,.aac,.aif,.aiff,.ogg,.opus"><input class="file" id="folder" type="file" multiple webkitdirectory directory><input class="file" id="zip" type="file" accept=".zip,application/zip"><div class="notice" id="notice" role="status" aria-live="polite">Starting offline library…</div><div class="meta"><span class="badge" id="libraryCount">0 tracks</span><span id="storage">Local storage status pending</span></div></section>
-<section class="panel"><small>NOW PLAYING</small><div class="titleNow" id="now">Choose audio files to begin</div><audio id="audio" preload="metadata" playsinline></audio><div class="controls"><button class="btn alt" id="prev" aria-label="Previous track">◀◀</button><button class="btn big" id="play">▶ Play</button><button class="btn alt" id="next" aria-label="Next track">▶▶</button></div><div class="mode-controls" role="group" aria-label="Playback mode"><button class="btn alt mode on" id="continuous" type="button" aria-pressed="true">↻ Continuous: ON</button><button class="btn alt mode" id="shuffle" type="button" aria-pressed="false">🔀 Shuffle: OFF</button></div><p class="mode-note" id="modeStatus">Continuous plays the next song and loops the playlist; Shuffle changes the order.</p><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Track progress"><div class="timing"><span id="elapsed">0:00</span><span id="duration">0:00</span></div><p class="hint">Offline test: after adding a song, switch on Airplane Mode and play it. If a file fails, try MP3/AAC or use VLC for unsupported formats. Background playback depends on iOS.</p></section>
-<section class="panel" id="lyricsPanel"><div class="lyrics-heading"><h2>Verified Lyrics + AI Timing</h2><span class="badge" id="lyricsBadge">AWAITING VERIFIED LYRICS</span></div><p class="hint" id="lyricsSong">Choose a song to see its verified lyrics.</p><div class="inline lyrics-actions"><button class="btn alt" id="pickOriginal" type="button">Import original lyrics (JSON)</button><button class="btn alt" id="pickVerified" type="button">Import verified lyrics (JSON)</button><button class="btn alt" id="pickAITiming" type="button">Import AI timestamps (LRC)</button></div><input class="file" id="originalJson" type="file" multiple accept=".json,application/json"><input class="file" id="verifiedJson" type="file" multiple accept=".json,application/json"><input class="file" id="aiLrc" type="file" accept=".lrc,text/plain"><div class="lyric-tools"><label for="lyricFont">Text size</label><input type="range" id="lyricFont" min="14" max="36" step="2" value="20" aria-label="Lyrics font size"><output id="lyricFontValue" for="lyricFont">20 px</output><button class="btn alt tiny" id="lyricFontReset" type="button">Reset</button></div><div class="lyric-exports"><button class="btn alt" id="exportLyricTxt" type="button">Export TXT</button><button class="btn alt" id="exportLyricLrc" type="button">Export LRC</button><button class="btn alt" id="exportLyricRecord" type="button">Export Record JSON</button><button class="btn alt" id="exportAllLyrics" type="button">Export Library JSON</button></div><div id="lyricDisplay" class="lyricbox" role="region" aria-label="Verified song lyrics"><p class="lyrics-empty">Awaiting verified original lyrics and evidence receipt from the PTIV workbench.</p></div><p id="lyricsNote" class="lyrics-info">Original source lyrics can be viewed unchanged and clearly labeled SOURCE · NOT AUDIO-VERIFIED. A completed verification receipt upgrades them to VERIFIED. AI will timestamp verified words only; AI timing generation is not yet integrated into this iPhone app.</p></section><div class="tabs"><button class="tab active" id="tabGhost">Ghost in the Wire</button><button class="tab" id="tabAll">All my music</button></div>
+<div class="eyebrow">P.T. ARCHITECH / PRIVATE LOCAL MUSIC</div><h1>PTIV WALKMAN</h1><small>Offline-first player · iPhone · Samsung Galaxy · Wear OS companion</small><p class="hint" id="deviceTip">Your audio stays on this device. Install in Safari on iPhone or Chrome on Android.</p>
+<div class="tape" id="tape" role="group" aria-label="Interactive cassette: triple tap or swipe horizontally to switch views"><div id="cassetteFace"><div class="stripe"></div><div class="sticker">GHOST IN THE WIRE<br><small>YOUR LOCAL LIBRARY / SIDE A+B</small></div><div class="wheels"><i class="wheel"></i><i class="wheel"></i></div></div><div class="deck-face hidden" id="deckFace" aria-live="polite"></div><div class="deck-nav"><button class="btn alt" id="deckPrev" type="button" aria-label="Previous cassette view">‹</button><span class="deck-status" id="deckStatus">1/5 · Cassette</span><button class="btn alt" id="deckNext" type="button" aria-label="Next cassette view">›</button></div><p class="deck-help">Swipe horizontally or triple-tap the cassette to switch views.</p></div><div class="inline" style="margin:0 3px 12px"><button class="btn alt tiny" id="copyBackTap" type="button">Copy iPhone Back Tap lyrics shortcut URL</button></div>
+<section class="panel"><h2>1. Add music from device Files</h2><p class="hint">Choose files, or choose an entire folder. The web app can only see files you select. Audio is stored locally for offline playback when device storage permits; <strong>nothing is sent to the internet</strong>. For permanent imports, use the installed app opened from your Home Screen, or a regular Safari tab — <strong>not Private Browsing</strong>.</p><div class="inline"><button class="btn" id="pickFiles">Choose music files</button><button class="btn alt" id="pickFolder">Choose folder</button><button class="btn alt" id="pickZip">Import ZIP</button></div><input class="file" id="files" type="file" multiple accept="audio/*,.mp3,.m4a,.wav,.flac,.aac,.aif,.aiff,.ogg,.opus"><input class="file" id="folder" type="file" multiple webkitdirectory directory><input class="file" id="zip" type="file" accept=".zip,application/zip"><div class="notice" id="notice" role="status" aria-live="polite">Starting offline library…</div><div class="meta"><span class="badge" id="libraryCount">0 tracks</span><span id="storage">Local storage status pending</span></div></section>
+<section class="panel"><small>NOW PLAYING</small><div class="titleNow" id="now">Choose audio files to begin</div><audio id="audio" preload="metadata" playsinline></audio><div class="controls"><button class="btn alt" id="prev" aria-label="Previous track">◀◀</button><button class="btn big" id="play">▶ Play</button><button class="btn alt" id="next" aria-label="Next track">▶▶</button></div><div class="mode-controls" role="group" aria-label="Playback mode"><button class="btn alt mode on" id="continuous" type="button" aria-pressed="true">↻ Continuous: ON</button><button class="btn alt mode" id="shuffle" type="button" aria-pressed="false">🔀 Shuffle: OFF</button></div><p class="mode-note" id="modeStatus">Continuous plays the next song and loops the playlist; Shuffle changes the order.</p><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Track progress"><div class="timing"><span id="elapsed">0:00</span><span id="duration">0:00</span></div><p class="hint">Android Galaxy / iPhone: import songs from Files, then test Airplane Mode. Use MP3/AAC when a format is unsupported. Background playback and watch media controls depend on the device and OS.</p></section>
+<section class="panel" id="lyricsPanel"><div class="lyrics-heading"><h2>Verified Lyrics + AI Timing</h2><span class="badge" id="lyricsBadge">AWAITING VERIFIED LYRICS</span></div><p class="hint" id="lyricsSong">Choose a song to see its verified lyrics.</p><div class="inline lyrics-actions"><button class="btn alt" id="pickOriginal" type="button">Import original lyrics (JSON)</button><button class="btn alt" id="pickVerified" type="button">Import verified lyrics (JSON)</button><button class="btn alt" id="pickAITiming" type="button">Import AI timestamps (LRC)</button></div><input class="file" id="originalJson" type="file" multiple accept=".json,application/json"><input class="file" id="verifiedJson" type="file" multiple accept=".json,application/json"><input class="file" id="aiLrc" type="file" accept=".lrc,text/plain"><div class="lyric-tools"><label for="lyricFont">Text size</label><input type="range" id="lyricFont" min="14" max="36" step="2" value="20" aria-label="Lyrics font size"><output id="lyricFontValue" for="lyricFont">20 px</output><button class="btn alt tiny" id="lyricFontReset" type="button">Reset</button></div><div class="lyric-exports"><button class="btn alt" id="exportLyricTxt" type="button">Export TXT</button><button class="btn alt" id="exportLyricLrc" type="button">Export LRC</button><button class="btn alt" id="exportLyricRecord" type="button">Export Record JSON</button><button class="btn alt" id="exportAllLyrics" type="button">Export Library JSON</button></div><div id="lyricDisplay" class="lyricbox" role="region" aria-label="Verified song lyrics"><p class="lyrics-empty">Awaiting verified original lyrics and evidence receipt from the PTIV workbench.</p></div><p id="lyricsNote" class="lyrics-info">Original source lyrics can be viewed unchanged and clearly labeled SOURCE · NOT AUDIO-VERIFIED. A completed verification receipt upgrades them to VERIFIED. AI will timestamp verified words only; AI timing generation is not yet integrated into this iPhone app.</p></section><div class="tabs"><button class="tab active" id="tabGhost">Ghost in the Wire</button><button class="tab" id="tabAll">All my music</button><button class="tab" id="tabCatalog">PTIV Catalog</button></div>
 <section class="panel" id="ghostPanel"><h2>Ghost in the Wire <small>· 12-title draft playlist</small></h2><p class="hint">Songs are matched by their filenames. If a track is unmatched, tap <strong>Assign</strong> and choose its audio file. Every imported track also appears in All my music.</p><ol id="ghostList"></ol></section>
 <section class="panel hidden" id="allPanel"><h2>All my music</h2><input class="search" id="search" placeholder="Search songs or folders…" aria-label="Search imported songs"><div id="allList"></div><p class="hint">The list comes from your device, not the NAS. Import additional folders anytime; duplicates are skipped.</p></section>
-<footer><strong>Installation:</strong> Do not use Safari Private Browsing. Open this app's <em>https://</em> address in Safari → Share → Add to Home Screen → Open as Web App → Add. Import music <strong>inside the installed app</strong> (not just a Safari tab). Once the interface and songs are cached, it can run offline. Keep your original audio in Files: iOS may clear website storage under space pressure or if app data is deleted. This is a free web app, not a signed native .ipa.</footer>
+
+<section class="panel hidden" id="catalogPanel">
+ <h2>PTIV Catalog · Playlists</h2>
+ <p class="hint" id="catalogInfo">Loading dated distributor track list. Ghost in the Wire remains a separate unreleased collection. Music files are never uploaded.</p>
+ <input class="search" id="catalogQuery" type="search" placeholder="Search title, release, tags…" aria-label="Search PTIV catalog">
+ <div class="catalog-filters">
+  <label>Release<select id="catalogAlbum"><option value="">All releases</option></select></label>
+  <label>Publication<select id="catalogPublished"><option value="">All</option><option value="published">Published</option><option value="unreleased">Unreleased Ghost</option></select></label>
+  <label>Language<select id="catalogLanguage"><option value="">All languages</option></select></label>
+  <label>Mood<select id="catalogMood"><option value="">All moods</option></select></label>
+  <label>Style / Genre<select id="catalogStyle"><option value="">All styles</option></select></label>
+  <label>Sort<select id="catalogSort"><option value="release">Release / Title</option><option value="title">Title A–Z</option><option value="bpm">BPM low → high</option></select></label>
+  <label>Minimum BPM<input type="number" min="30" max="300" id="catalogBpmMin" placeholder="Any"></label>
+  <label>Maximum BPM<input type="number" min="30" max="300" id="catalogBpmMax" placeholder="Any"></label>
+ </div>
+ <div class="catalog-tools">
+  <button class="btn" id="playCatalog" type="button">▶ Play matching local tracks</button>
+  <button class="btn alt" id="shuffleCatalog" type="button">🔀 Shuffle matching</button>
+  <button class="btn alt" id="saveCatalogPlaylist" type="button">Save filter as playlist</button>
+ </div>
+ <div class="inline"><select class="playlist-select" id="catalogSavedPlaylists" aria-label="Saved smart playlists"><option value="">Saved playlists…</option></select><button class="btn alt tiny" id="loadCatalogPlaylist" type="button">Load</button></div>
+ <p class="catalog-counter" id="catalogCounter">Catalog not loaded</p>
+ <div class="tags-editor hidden" id="tagEditor">
+  <strong id="tagEditorTitle">Tag track</strong><p>Local tags only. Never changes Too Lost. Unknown fields remain empty until confirmed.</p>
+  <div class="tag-grid">
+   <label>BPM (optional)<input id="tagBpm" type="number" min="30" max="300" step=".1" placeholder="Unknown"></label>
+   <label>Language<input id="tagLanguage" type="text" maxlength="30" placeholder="e.g. Spanish"></label>
+   <label>Mood<input id="tagMood" type="text" maxlength="50" placeholder="e.g. introspective"></label>
+   <label>Style<input id="tagStyle" type="text" maxlength="50" placeholder="e.g. electro-cabaret"></label>
+  </div>
+  <div class="catalog-tools"><button class="btn" id="tagSave" type="button">Save local tags</button><button class="btn alt" id="tagCancel" type="button">Cancel</button></div>
+ </div>
+ <div id="catalogList" role="list"></div>
+ <button class="btn alt hidden" type="button" id="catalogMore">Show more tracks</button>
+ <p class="hint">131 published entries reflect your dated 2026-10-12 Too Lost export; the unreleased Ghost draft is listed separately. BPM/mood/style/language show Unknown until sourced or tagged. The catalogue is an index, not a streaming service; songs are playable once imported on this device.</p>
+</section>
+<footer><strong>Install:</strong> iPhone: open in regular Safari → Share → Add to Home Screen. Samsung Galaxy / Android: open in Chrome → ⋮ → Add to Home screen → Install app (wording varies). Import music in the installed app separately on each device. Galaxy Watch can control phone playback via Android media controls when supported; a standalone watch player requires its own installed Wear OS app and audio on the watch. The interface and imported files can work offline once cached. Keep master copies in Files or NAS: phones may clear app data under storage pressure.</footer>
 </main>
 <script>
 'use strict';
@@ -59,20 +119,99 @@ $('pickVerified').onclick=()=>$('verifiedJson').click();
 $('verifiedJson').onchange=e=>{if(e.target.files?.length)importVerifiedBundle(e.target.files);e.target.value=''};
 $('pickAITiming').onclick=()=>{if(!lyricsForCurrent()){$('lyricsNote').textContent='First import the verified lyrics record for the selected song.';return}$('aiLrc').click()};
 $('aiLrc').onchange=e=>{if(e.target.files?.length)importAITiming(e.target.files[0]);e.target.value=''};
-const DECK_NAMES=['cassette','lyrics','info','listen'],DECK_KEY='ptiv-walkman-deck-v1';
+const DECK_NAMES=['cassette','lyrics','info','listen','visualizer'],DECK_KEY='ptiv-walkman-deck-v1';
 let deckIndex=0,deckTapCount=0,deckLastTap=0,deckLastSwipe=0,deckTouchStart=null,deckLastLine=-1;
 function deckIndexFromHash(){const v=decodeURIComponent(location.hash.replace(/^#/,'')).toLowerCase();const name=v.startsWith('deck=')?v.slice(5):v;return DECK_NAMES.indexOf(name)}
 function setDeck(index,fromHash=false){deckIndex=(index+DECK_NAMES.length)%DECK_NAMES.length;try{localStorage.setItem(DECK_KEY,String(deckIndex))}catch(e){}if(!fromHash){const hash='#deck='+DECK_NAMES[deckIndex];if(location.hash!==hash)history.replaceState(null,'',location.pathname+location.search+hash)}renderDeck()}
 function deckText(parent,text,cls=''){const d=document.createElement('p');if(cls)d.className=cls;d.textContent=text;parent.appendChild(d);return d}
 function makeDeckLink(parent,title,url){const a=document.createElement('a');a.textContent=title;a.href=url;a.target='_blank';a.rel='noopener noreferrer';parent.appendChild(a)}
-function renderDeck(){const activeFace=$('deckFace'),base=$('cassetteFace'),name=DECK_NAMES[deckIndex],track=allMeta().find(x=>x.id===active),rec=lyricsForCurrent();$('deckStatus').textContent=(deckIndex+1)+'/4 · '+name;const showAlt=deckIndex!==0;base.classList.toggle('hidden',showAlt);activeFace.classList.toggle('hidden',!showAlt);if(!showAlt)return;activeFace.replaceChildren();const head=document.createElement('h3');head.textContent=({lyrics:'Lyrics on cassette',info:'Now playing · Details',listen:'Listen / Discover'})[name];activeFace.append(head);if(name==='lyrics'){if(!rec){deckText(activeFace,'Choose a track with imported original lyrics. No lyrics are invented.');return}const verified=receiptValid(rec);deckText(activeFace,verified?'VERIFIED SOURCE WORDS':'ORIGINAL SOURCE · NOT AUDIO-VERIFIED','deck-meta');const holder=document.createElement('div');holder.className='deck-lines';activeFace.appendChild(holder);const lines=rec.lines.filter(l=>l.text&&l.text.trim());if(!lines.length){deckText(holder,'No lyric lines found.');return}let current=-1;if(rec.timing_status==='AI_DRAFT'){for(let k=0;k<lines.length;k++)if(lines[k].time!==null&&lines[k].time<=audio.currentTime+0.05)current=k}const from=Math.max(0,current>=0?current-1:0);lines.slice(from,from+6).forEach((line,i)=>{const el=deckText(holder,line.text,from+i===current?'current':'');el.title=line.time===null?'Original lyrics':'Timing candidate '+fmt(line.time)});deckLastLine=current;return}if(name==='info'){deckText(activeFace,track?'Title: '+track.name:'No song selected yet.','deck-meta');deckText(activeFace,'Artist: P.T. Architech','deck-meta');deckText(activeFace,'Album: '+(rec?.album||'Ghost in the Wire (local library)'),'deck-meta');if(track)deckText(activeFace,'File: '+track.path+' · '+Math.round(track.size/1048576*10)/10+' MB','deck-meta');if(audio.duration)deckText(activeFace,'Duration: '+fmt(audio.duration),'deck-meta');deckText(activeFace,'Lyrics: '+(rec?(receiptValid(rec)?'words verified':'original source awaiting audio verification'):'not imported'),'deck-meta');return}if(name==='listen'){const isGhost=!rec?.album||rec.album.toLowerCase().includes('ghost in the wire')||playbackContext==='ghost';if(isGhost)deckText(activeFace,'Ghost in the Wire is not yet published. This copy plays locally, offline. There are no verified direct streaming links for this album.');else deckText(activeFace,'Browse P.T. Architech on music platforms. These are searches, not confirmed track-specific links.');const links=document.createElement('div');links.className='deck-external';activeFace.appendChild(links);const artist='P.T. Architech';makeDeckLink(links,'Spotify artist search','https://open.spotify.com/search/'+encodeURIComponent(artist));makeDeckLink(links,'Apple Music search','https://music.apple.com/us/search?term='+encodeURIComponent(artist));makeDeckLink(links,'YouTube Music search','https://music.youtube.com/search?q='+encodeURIComponent(artist));makeDeckLink(links,'Qobuz discography','https://www.qobuz.com/us-en/interpreter/pt-architech/32553437');deckText(activeFace,'These discovery links require internet. Local playback and lyrics do not.','deck-meta')}}
-function initDeck(){const hash=deckIndexFromHash();if(hash>=0)deckIndex=hash;else try{const prior=Number(localStorage.getItem(DECK_KEY));if(Number.isInteger(prior)&&prior>=0&&prior<4)deckIndex=prior}catch(e){}renderDeck()}
+function renderDeck(){const activeFace=$('deckFace'),base=$('cassetteFace'),name=DECK_NAMES[deckIndex],track=allMeta().find(x=>x.id===active),rec=lyricsForCurrent();$('deckStatus').textContent=(deckIndex+1)+'/4 · '+name;const showAlt=deckIndex!==0;base.classList.toggle('hidden',showAlt);activeFace.classList.toggle('hidden',!showAlt);if(!showAlt)return;activeFace.replaceChildren();const head=document.createElement('h3');head.textContent=({lyrics:'Lyrics on cassette',info:'Now playing · Details',listen:'Listen / Discover',visualizer:'PTIV Spectrum · Live audio'})[name];activeFace.append(head);if(name==='visualizer'){renderVisualizer(activeFace);return}if(name==='lyrics'){if(!rec){deckText(activeFace,'Choose a track with imported original lyrics. No lyrics are invented.');return}const verified=receiptValid(rec);deckText(activeFace,verified?'VERIFIED SOURCE WORDS':'ORIGINAL SOURCE · NOT AUDIO-VERIFIED','deck-meta');const holder=document.createElement('div');holder.className='deck-lines';activeFace.appendChild(holder);const lines=rec.lines.filter(l=>l.text&&l.text.trim());if(!lines.length){deckText(holder,'No lyric lines found.');return}let current=-1;if(rec.timing_status==='AI_DRAFT'){for(let k=0;k<lines.length;k++)if(lines[k].time!==null&&lines[k].time<=audio.currentTime+0.05)current=k}const from=Math.max(0,current>=0?current-1:0);lines.slice(from,from+6).forEach((line,i)=>{const el=deckText(holder,line.text,from+i===current?'current':'');el.title=line.time===null?'Original lyrics':'Timing candidate '+fmt(line.time)});deckLastLine=current;return}if(name==='info'){deckText(activeFace,track?'Title: '+track.name:'No song selected yet.','deck-meta');deckText(activeFace,'Artist: P.T. Architech','deck-meta');deckText(activeFace,'Album: '+(rec?.album||'Ghost in the Wire (local library)'),'deck-meta');if(track)deckText(activeFace,'File: '+track.path+' · '+Math.round(track.size/1048576*10)/10+' MB','deck-meta');if(audio.duration)deckText(activeFace,'Duration: '+fmt(audio.duration),'deck-meta');deckText(activeFace,'Lyrics: '+(rec?(receiptValid(rec)?'words verified':'original source awaiting audio verification'):'not imported'),'deck-meta');return}if(name==='listen'){const isGhost=!rec?.album||rec.album.toLowerCase().includes('ghost in the wire')||playbackContext==='ghost';if(isGhost)deckText(activeFace,'Ghost in the Wire is not yet published. This copy plays locally, offline. There are no verified direct streaming links for this album.');else deckText(activeFace,'Browse P.T. Architech on music platforms. These are searches, not confirmed track-specific links.');const links=document.createElement('div');links.className='deck-external';activeFace.appendChild(links);const artist='P.T. Architech';makeDeckLink(links,'Spotify artist search','https://open.spotify.com/search/'+encodeURIComponent(artist));makeDeckLink(links,'Apple Music search','https://music.apple.com/us/search?term='+encodeURIComponent(artist));makeDeckLink(links,'YouTube Music search','https://music.youtube.com/search?q='+encodeURIComponent(artist));makeDeckLink(links,'Qobuz discography','https://www.qobuz.com/us-en/interpreter/pt-architech/32553437');deckText(activeFace,'These discovery links require internet. Local playback and lyrics do not.','deck-meta')}}
+function initDeck(){const hash=deckIndexFromHash();if(hash>=0)deckIndex=hash;else try{const prior=Number(localStorage.getItem(DECK_KEY));if(Number.isInteger(prior)&&prior>=0&&prior<DECK_NAMES.length)deckIndex=prior}catch(e){}renderDeck()}
 $('deckNext').onclick=()=>setDeck(deckIndex+1);$('deckPrev').onclick=()=>setDeck(deckIndex-1);
 $('tape').addEventListener('click',e=>{if(e.target.closest('button,a,input'))return;if(Date.now()-deckLastSwipe<450)return;const now=Date.now();deckTapCount=now-deckLastTap<550?deckTapCount+1:1;deckLastTap=now;if(deckTapCount>=3){deckTapCount=0;setDeck(deckIndex+1)}});
 $('tape').addEventListener('touchstart',e=>{if(e.touches.length===1)deckTouchStart={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
 $('tape').addEventListener('touchend',e=>{if(!deckTouchStart||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-deckTouchStart.x,dy=e.changedTouches[0].clientY-deckTouchStart.y;deckTouchStart=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.35){deckLastSwipe=Date.now();deckTapCount=0;setDeck(deckIndex+(dx<0?1:-1))}},{passive:true});
 window.addEventListener('hashchange',()=>{const i=deckIndexFromHash();if(i>=0)setDeck(i,true)});
 $('copyBackTap').onclick=async()=>{const link=location.origin+location.pathname+'#deck=lyrics';try{await navigator.clipboard.writeText(link);msg('Copied lyrics-view URL. Create an iPhone Shortcut with Open URLs, paste this URL, then assign it to Back Tap in Settings → Accessibility → Touch → Back Tap. This opens a view; hardware Back Tap does not directly control the webpage.')}catch(e){window.prompt('Copy this URL into your Shortcuts Open URL action:',link)}};
+
+const VIS_MODE_KEY='ptiv-walkman-viz-mode';
+let vizContext=null,vizAnalyser=null,vizMediaSource=null,vizFreq=null,vizTime=null,vizLoopRunning=false,vizMode='spectrum',vizError='';
+try{const savedVizMode=localStorage.getItem(VIS_MODE_KEY);if(['spectrum','oscilloscope','embers'].includes(savedVizMode))vizMode=savedVizMode}catch(e){}
+async function enableVisualizer(){
+ if(!audio.src){msg('Import and play an audio file first; the spectrum is calculated directly from your local audio.',true);return}
+ const Constructor=window.AudioContext||window.webkitAudioContext;
+ if(!Constructor){vizError='Web Audio API is not available in this browser.';renderDeck();return}
+ try{
+  if(!vizContext){
+   vizContext=new Constructor();
+   vizMediaSource=vizContext.createMediaElementSource(audio);
+   vizAnalyser=vizContext.createAnalyser();
+   vizAnalyser.fftSize=2048;
+   vizAnalyser.smoothingTimeConstant=.75;
+   vizMediaSource.connect(vizAnalyser);
+   vizAnalyser.connect(vizContext.destination);
+   vizFreq=new Uint8Array(vizAnalyser.frequencyBinCount);
+   vizTime=new Uint8Array(vizAnalyser.fftSize);
+  }
+  await vizContext.resume();
+  vizError='';
+  renderDeck();
+  startVizLoop();
+ }catch(e){vizError='Cannot start audio analysis: '+(e?.message||String(e));renderDeck()}
+}
+function renderVisualizer(parent){
+ const panel=document.createElement('div');panel.className='viz-surface';
+ const canvas=document.createElement('canvas');canvas.id='vizCanvas';canvas.width=640;canvas.height=240;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Audio-frequency visualizer calculated live from music playing on this device');
+ panel.appendChild(canvas);parent.appendChild(panel);
+ const options=document.createElement('div');options.className='viz-options';
+ const toggle=document.createElement('button');toggle.className='btn alt';toggle.type='button';toggle.textContent=vizContext?'Resume live visualizer':'Enable live visualizer';toggle.onclick=enableVisualizer;
+ options.appendChild(toggle);
+ const select=document.createElement('select');select.setAttribute('aria-label','Visualization mode');
+ for(const [value,label] of [['spectrum','Spectrum bars'],['oscilloscope','Oscilloscope'],['embers','Fire spectrum']]){const opt=document.createElement('option');opt.value=value;opt.textContent=label;select.appendChild(opt)}
+ select.value=vizMode;select.onchange=()=>{vizMode=select.value;try{localStorage.setItem(VIS_MODE_KEY,vizMode)}catch(e){};drawVisualizer(canvas)};
+ options.appendChild(select);parent.appendChild(options);
+ const note=document.createElement('p');note.className='viz-foot';note.textContent=vizError||'Real audio-responsive display · No network · Touch Enable once after starting a song. Spectrum pauses when this view is hidden to conserve power.';parent.appendChild(note);
+ drawVisualizer(canvas);startVizLoop();
+}
+function drawVisualizer(canvas){
+ if(!canvas)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ const w=canvas.width,h=canvas.height;
+ ctx.fillStyle='#071118';ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='#183438';ctx.lineWidth=1;
+ for(let y=30;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ for(let x=40;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+ if(!vizAnalyser||vizContext?.state!=='running'){
+  ctx.font='bold 23px ui-monospace,monospace';ctx.fillStyle='#c3f771';ctx.textAlign='center';ctx.fillText('PTIV  SPECTRUM',w/2,103);
+  ctx.font='16px ui-monospace,monospace';ctx.fillStyle='#a3bbb6';ctx.fillText('TAP ENABLE FOR LIVE SOUND',w/2,139);return;
+ }
+ if(vizMode==='oscilloscope'){
+  vizAnalyser.getByteTimeDomainData(vizTime);
+  ctx.beginPath();ctx.lineWidth=3;ctx.strokeStyle='#c3f771';
+  for(let i=0;i<vizTime.length;i++){const x=i/(vizTime.length-1)*w,y=(vizTime[i]/255)*h;if(!i)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+  ctx.stroke();return;
+ }
+ vizAnalyser.getByteFrequencyData(vizFreq);
+ const count=56,barWidth=w/count;
+ for(let i=0;i<count;i++){
+  const index=Math.min(vizFreq.length-1,Math.floor(Math.pow(i/(count-1),1.9)*(vizFreq.length-1)));
+  const intensity=vizFreq[index]/255,barH=Math.max(2,Math.pow(intensity,1.22)*(h-14));
+  const grad=ctx.createLinearGradient(0,h-barH,0,h);
+  if(vizMode==='embers'){grad.addColorStop(0,'#ffda75');grad.addColorStop(.5,'#f58e48');grad.addColorStop(1,'#a33050')}
+  else{grad.addColorStop(0,'#e2ff9e');grad.addColorStop(.45,'#a6f474');grad.addColorStop(1,'#1c7769')}
+  ctx.fillStyle=grad;ctx.fillRect(i*barWidth+2,h-barH,Math.max(3,barWidth-4),barH);
+ }
+}
+function startVizLoop(){
+ if(vizLoopRunning||deckIndex!==4||document.hidden||!vizAnalyser)return;
+ vizLoopRunning=true;
+ const tick=()=>{if(deckIndex!==4||document.hidden||!vizAnalyser){vizLoopRunning=false;return}
+  const canvas=$('vizCanvas');if(!canvas){vizLoopRunning=false;return}
+  drawVisualizer(canvas);window.requestAnimationFrame(tick)};
+ window.requestAnimationFrame(tick);
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)startVizLoop()});
+
 const FONT_KEY='ptiv-walkman-lyric-font-v1';
 function setLyricFont(px){const n=Math.min(36,Math.max(14,Math.round(Number(px)/2)*2||20));document.documentElement.style.setProperty('--lyric-font',n+'px');$('lyricFont').value=String(n);$('lyricFontValue').textContent=n+' px';try{localStorage.setItem(FONT_KEY,String(n))}catch(e){}if(deckIndex===1)renderDeck()}
 function initLyricFont(){let n=20;try{const saved=Number(localStorage.getItem(FONT_KEY));if(saved>=14&&saved<=36)n=saved}catch(e){}setLyricFont(n)}
@@ -96,7 +235,7 @@ function matches(s,t){const x=norm(s),y=norm(t);return !!x&&!!y&&(x===y||x.lengt
 function ghostMatch(t){const a=allMeta();return a.find(s=>matches(t,s.name))}
 function button(text,fn){const el=document.createElement('button');el.className='btn alt tiny';el.textContent=text;el.addEventListener('click',fn);return el}
 function liTrack(parent,number,name,sub,found){const li=document.createElement('li');li.className='song'+(found?' ready':'')+(active&&found&&active===found.id?' playing':'');const num=document.createElement('span');num.className='no';num.textContent=String(number).padStart(2,'0');const body=document.createElement('div');body.className='name';body.textContent=name;const detail=document.createElement('div');detail.className='sub';detail.textContent=sub||'';body.append(detail);li.append(num,body);if(found){li.append(button('▶',()=>selectTrack(found.id)));}else{const missing=document.createElement('span');missing.className='state';missing.textContent='MISSING';li.append(missing);const inp=document.createElement('input');inp.type='file';inp.accept='audio/*,.mp3,.m4a,.wav,.flac';inp.hidden=true;inp.onchange=async()=>{if(inp.files?.length){const f=inp.files[0];await importFiles([f],{assignTo:name});}};li.append(button('Assign',()=>inp.click()),inp)}parent.appendChild(li)}
-function redraw(){let songCount=numberOfSongs();$('libraryCount').textContent=songCount+' track'+(songCount!==1?'s':'');const gl=$('ghostList');gl.replaceChildren();ghost.forEach((t,i)=>{const match=ghostMatch(t);liTrack(gl,i+1,t,match?'✓ SAVED LOCAL':'Select a local file to assign',match)});const list=$('allList');list.replaceChildren();let filtered=allMeta().filter(t=>[t.name,t.path].some(x=>String(x||'').toLowerCase().includes($('search').value.toLowerCase())));if(!filtered.length){const p=document.createElement('p');p.className='empty';p.textContent=songCount?'No songs match your search.':'Import files or a folder to start your library.';list.appendChild(p)}else{let ul=document.createElement('ul');filtered.forEach((t,i)=>liTrack(ul,i+1,t.name,short(t.path)+(stored.has(t.id)?' · OFFLINE':' · SESSION ONLY'),t));list.append(ul)}}
+function redraw(){let songCount=numberOfSongs();$('libraryCount').textContent=songCount+' track'+(songCount!==1?'s':'');const gl=$('ghostList');gl.replaceChildren();ghost.forEach((t,i)=>{const match=ghostMatch(t);liTrack(gl,i+1,t,match?'✓ SAVED LOCAL':'Select a local file to assign',match)});const list=$('allList');list.replaceChildren();let filtered=allMeta().filter(t=>[t.name,t.path].some(x=>String(x||'').toLowerCase().includes($('search').value.toLowerCase())));if(!filtered.length){const p=document.createElement('p');p.className='empty';p.textContent=songCount?'No songs match your search.':'Import files or a folder to start your library.';list.appendChild(p)}else{let ul=document.createElement('ul');filtered.forEach((t,i)=>liTrack(ul,i+1,t.name,short(t.path)+(stored.has(t.id)?' · OFFLINE':' · SESSION ONLY'),t));list.append(ul)}renderCatalog()}
 async function refreshStorage(){if(!db){$('storage').textContent='SESSION ONLY — permanent storage unavailable'+(dbIssue?' ('+dbIssue+')':'');return}if(lastSaveIssue){$('storage').textContent='SAVE FAILED ('+lastSaveIssue+'). Local database is open, but audio did not persist.';return}if(navigator.storage?.estimate){try{let s=await navigator.storage.estimate();$('storage').textContent='Offline library open · '+(s.usage/1048576).toFixed(0)+' MB used / '+(s.quota/1048576).toFixed(0)+' MB allowed (estimate)';return}catch(e){}}$('storage').textContent='On-device library enabled'}
 function safeFileName(s){return String(s).replace(/\\/g,'/').split('/').pop().replace(AUDIO,'').replace(/^\d{1,3}[\s._-]+/,'').trim()}
 async function importFiles(files,opt={}){const audioFiles=Array.from(files).filter(f=>AUDIO.test(f.name));if(!audioFiles.length){msg('No supported audio files found. Choose MP3, M4A, AAC, WAV, FLAC, OGG or AIFF.',true);return}busy=true;setInputs(true);let added=0,dupes=0,failed=0;const reasons=new Set();lastSaveIssue='';const seen=keys();msg('Importing '+audioFiles.length+' local audio file(s)…');for(const f of audioFiles){const path=f.webkitRelativePath||f.ptivZipPath||opt.basePath&&opt.basePath+'/'+f.name||f.name;const name=opt.assignTo||safeFileName(f.name);const id=path.toLowerCase()+'|'+f.size+'|'+f.lastModified;if(seen.has(id)){dupes++;continue}const row={id,name,path,size:f.size,type:f.type||'',lastModified:f.lastModified||0,blob:f};if(db){let error=null,saved=false;try{await transaction('readwrite',store=>store.put(row));saved=true}catch(e){error=e;if(e?.name==='DataCloneError'){try{await transaction('readwrite',store=>store.put({...row,blob:new Blob([f],{type:f.type||'application/octet-stream'})}));saved=true}catch(e2){error=e2}}}if(saved){stored.set(id,((({blob,...m})=>m)(row)))}else{ephemerals.set(id,row);failed++;const reason=error?.name||error?.message||'Unknown storage error';reasons.add(reason);lastSaveIssue=reason}}else{ephemerals.set(id,row);failed++;reasons.add(dbIssue||'IndexedDB unavailable');lastSaveIssue=dbIssue||'IndexedDB unavailable'}added++;seen.add(id);if((added+dupes)%8===0)msg('Imported '+(added+dupes)+' / '+audioFiles.length+'…')}
@@ -108,19 +247,208 @@ $('folder').onchange=e=>{if(e.target.files?.length)importFiles(e.target.files);e
 async function unzipFiles(file){const b=await file.arrayBuffer(),v=new DataView(b),u=new Uint8Array(b);let p=b.byteLength-22;while(p>=Math.max(0,b.byteLength-65557)&&v.getUint32(p,true)!==0x06054b50)p--;if(p<0)throw Error('Invalid ZIP archive');const n=v.getUint16(p+10,true);let c=v.getUint32(p+16,true);const out=[];for(let i=0;i<n;i++){if(v.getUint32(c,true)!==0x02014b50)throw Error('ZIP entry index invalid');const method=v.getUint16(c+10,true),compressed=v.getUint32(c+20,true),size=v.getUint32(c+24,true),nameLength=v.getUint16(c+28,true),extra=v.getUint16(c+30,true),comment=v.getUint16(c+32,true),offset=v.getUint32(c+42,true);const path=new TextDecoder().decode(u.slice(c+46,c+46+nameLength));c+=46+nameLength+extra+comment;if(!AUDIO.test(path)||path.endsWith('/'))continue;if(out.length>=3000)throw Error('ZIP contains too many tracks');if(size>250*1048576)throw Error('Very large audio file in ZIP: '+path);if(v.getUint32(offset,true)!==0x04034b50)throw Error('ZIP entry unavailable');const start=offset+30+v.getUint16(offset+26,true)+v.getUint16(offset+28,true);const bytes=u.slice(start,start+compressed);let result;if(method===0)result=bytes;else if(method===8&&typeof DecompressionStream==='function'){result=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}else throw Error('ZIP compression unsupported on this device. Try folder import instead.');out.push(new File([result],path.split('/').pop(),{type:'',lastModified:file.lastModified}));out[out.length-1].ptivZipPath=path;}return out}
 $('zip').onchange=async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{msg('Reading ZIP on-device…');let contents=await unzipFiles(f);if(!contents.length)msg('No audio files found in this ZIP.',true);else await importFiles(contents,{basePath:f.name})}catch(err){msg('ZIP import could not finish: '+err.message,true)}};
 const MODE_KEY='ptiv-walkman-playback-modes-v1';
-function orderedIds(context=playbackContext){const ids=context==='ghost'?ghost.map(t=>ghostMatch(t)?.id):allMeta().map(t=>t.id);return ids.filter((id,i)=>id&&ids.indexOf(id)===i)}
+function orderedIds(context=playbackContext){const ids=context==='ghost'?ghost.map(t=>ghostMatch(t)?.id):context==='catalog'?catalogQueueIds:allMeta().map(t=>t.id);return ids.filter((id,i)=>id&&ids.indexOf(id)===i)}
 function rebuildQueue(startId=null){let ids=orderedIds();if(startId&&!ids.includes(startId))ids.unshift(startId);if(shuffle){const other=ids.filter(id=>id!==startId);for(let i=other.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[other[i],other[j]]=[other[j],other[i]]}playIds=startId?[startId,...other]:other}else playIds=ids}
 function updateModes(){const c=$('continuous'),s=$('shuffle');c.textContent=continuous?'↻ Continuous: ON':'↻ Continuous: OFF';s.textContent=shuffle?'🔀 Shuffle: ON':'🔀 Shuffle: OFF';c.setAttribute('aria-pressed',String(continuous));s.setAttribute('aria-pressed',String(shuffle));c.classList.toggle('on',continuous);s.classList.toggle('on',shuffle);$('modeStatus').textContent=(continuous?'Next song automatically; repeats the playlist.':'Stops after the current song.')+' '+(shuffle?'Random track order (each cycle reshuffles).':'Original playlist order.')}
 function saveModes(){try{localStorage.setItem(MODE_KEY,JSON.stringify({continuous,shuffle}))}catch(e){}}
 function initModes(){try{const modes=JSON.parse(localStorage.getItem(MODE_KEY)||'null');if(modes){continuous=modes.continuous!==false;shuffle=modes.shuffle===true}}catch(e){}updateModes()}
 $('continuous').onclick=()=>{continuous=!continuous;saveModes();updateModes()};
 $('shuffle').onclick=()=>{shuffle=!shuffle;rebuildQueue(active);saveModes();updateModes()};
-async function selectTrack(id,fromQueue=false){let row;try{row=await getTrack(id)}catch(e){msg('File is missing from local storage. Select it again in Files.',true);return}if(!row?.blob){msg('Song not saved. Please reimport it.',true);return}try{if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(row.blob);active=id;if(!fromQueue||!playIds.includes(id)){playbackContext=tab;rebuildQueue(id)}audio.src=audioUrl;audio.load();$('now').textContent=row.name;redraw();renderLyrics();renderDeck();await audio.play()}catch(e){msg('Song loaded. Tap ▶ Play once more if iPhone blocked autoplay; or try an MP3/AAC copy.',true)}}
+async function selectTrack(id,fromQueue=false){let row;try{row=await getTrack(id)}catch(e){msg('File is missing from local storage. Select it again in Files.',true);return}if(!row?.blob){msg('Song not saved. Please reimport it.',true);return}try{if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(row.blob);active=id;if(!fromQueue||!playIds.includes(id)){playbackContext=tab;rebuildQueue(id)}audio.src=audioUrl;audio.load();$('now').textContent=row.name;redraw();renderLyrics();renderDeck();updateMediaSession();await audio.play()}catch(e){msg('Song loaded. Tap ▶ Play once more if iPhone blocked autoplay; or try an MP3/AAC copy.',true)}}
 $('play').onclick=()=>{if(audio.paused){if(active&&audio.src){audio.play().catch(()=>msg('Tap ▶ Play again, or use MP3/AAC if this format is unsupported.',true))}else{let first=tab==='ghost'?ghost.map(t=>ghostMatch(t)?.id).find(Boolean):allMeta()[0]?.id;if(first)selectTrack(first);else msg('Choose music files or a folder first.',true)}}else audio.pause()};
 function step(dir,automatic=false){if(automatic&&!continuous)return;if(!playIds.length){msg('Import songs first.',true);return}let k=playIds.indexOf(active);if(k<0)k=0;if(automatic&&shuffle&&dir>0&&k===playIds.length-1&&playIds.length>1){rebuildQueue(active);k=0}const next=playIds[(k+dir+playIds.length)%playIds.length];if(next)selectTrack(next,true)}
 $('next').onclick=()=>step(1);$('prev').onclick=()=>audio.currentTime>4?audio.currentTime=0:step(-1);
-audio.onplay=()=>{$('play').textContent='❚❚ Pause';$('tape').classList.add('spinning')};audio.onpause=()=>{$('play').textContent='▶ Play';$('tape').classList.remove('spinning')};audio.onended=()=>step(1,true);audio.onerror=()=>msg('This audio format could not play on this iPhone. Try MP3/AAC or use VLC.',true);
-audio.ontimeupdate=()=>{syncLyrics();if(deckIndex===1){const rec=lyricsForCurrent();if(rec?.timing_status==='AI_DRAFT'){let k=-1;for(let i=0;i<rec.lines.length;i++){const line=rec.lines[i];if(line.time!==null&&line.time<=audio.currentTime+0.05)k=i}if(k!==deckLastLine)renderDeck()}}$('elapsed').textContent=fmt(audio.currentTime);if(!seeks&&audio.duration)$('seek').value=Math.round(1000*audio.currentTime/audio.duration)};audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration)};$('seek').oninput=()=>seeks=true;$('seek').onchange=e=>{if(Number.isFinite(audio.duration))audio.currentTime=(+e.target.value/1000)*audio.duration;seeks=false};
-function setTab(t){tab=t;$('tabGhost').classList.toggle('active',t==='ghost');$('tabAll').classList.toggle('active',t==='all');$('ghostPanel').classList.toggle('hidden',t!=='ghost');$('allPanel').classList.toggle('hidden',t!=='all');redraw()}$('tabGhost').onclick=()=>setTab('ghost');$('tabAll').onclick=()=>setTab('all');$('search').oninput=redraw;
-initModes();initDeck();initLyricFont();(async()=>{try{db=await dbOpen();await loadIndex();await loadLyrics();msg('Offline library ready. Import your songs to begin.')}catch(e){dbIssue=e?.name||e?.message||'Unknown storage error';msg('Device storage unavailable ('+dbIssue+'): songs will play only until the app closes. Use a regular Safari tab, not Private Browsing, and install from your Home Screen.',true)}redraw();renderLyrics();await refreshStorage();if('serviceWorker'in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(()=>{});}})();
+audio.onplay=()=>{$('play').textContent='❚❚ Pause';$('tape').classList.add('spinning');mediaPlaybackState();if(vizContext?.state==='suspended')vizContext.resume().catch(()=>{})};audio.onpause=()=>{$('play').textContent='▶ Play';$('tape').classList.remove('spinning');mediaPlaybackState()};audio.onended=()=>step(1,true);audio.onerror=()=>msg('This audio format could not play on this device. Try MP3/AAC or use VLC.',true);
+audio.ontimeupdate=()=>{syncLyrics();if(deckIndex===1){const rec=lyricsForCurrent();if(rec?.timing_status==='AI_DRAFT'){let k=-1;for(let i=0;i<rec.lines.length;i++){const line=rec.lines[i];if(line.time!==null&&line.time<=audio.currentTime+0.05)k=i}if(k!==deckLastLine)renderDeck()}}$('elapsed').textContent=fmt(audio.currentTime);mediaPositionState();if(!seeks&&audio.duration)$('seek').value=Math.round(1000*audio.currentTime/audio.duration)};audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration);mediaPositionState()};$('seek').oninput=()=>seeks=true;$('seek').onchange=e=>{if(Number.isFinite(audio.duration))audio.currentTime=(+e.target.value/1000)*audio.duration;seeks=false};
+
+const CATALOG_TAG_KEY='ptiv-walkman-catalog-tags-v1';
+const CATALOG_ASSIGN_KEY='ptiv-walkman-catalog-assignments-v1';
+const CATALOG_PLAYLISTS_KEY='ptiv-walkman-smart-playlists-v1';
+let catalogEntries=[],catalogTags={},catalogAssignments={},catalogPlaylists=[],catalogQueueIds=[],catalogEditingId=null,catalogShowLimit=55,catalogReady=false;
+function localObj(key,fallback){try{const a=JSON.parse(localStorage.getItem(key)||'null');return a??fallback}catch(e){return fallback}}
+catalogTags=localObj(CATALOG_TAG_KEY,{});
+catalogAssignments=localObj(CATALOG_ASSIGN_KEY,{});
+catalogPlaylists=localObj(CATALOG_PLAYLISTS_KEY,[]);
+function storeLocal(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){msg('Could not save your tags on this device: '+e.message,true);return false}}
+function catalogTrack(item){return {...item,...(catalogTags[item.id]||{})}}
+function playableCatalogTrack(item){
+ const assigned=catalogAssignments[item.id];
+ if(assigned){const match=allMeta().find(x=>x.id===assigned);if(match)return match}
+ const found=allMeta().filter(x=>matches(item.title,x.name));
+ return found.length===1?found[0]:null;
+}
+function catalogFilterState(){return {query:$('catalogQuery').value,album:$('catalogAlbum').value,publication:$('catalogPublished').value,language:$('catalogLanguage').value,mood:$('catalogMood').value,style:$('catalogStyle').value,sort:$('catalogSort').value,bpmMin:$('catalogBpmMin').value,bpmMax:$('catalogBpmMax').value}}
+function availableCatalogValues(field){
+ return [...new Set(catalogEntries.map(x=>String(catalogTrack(x)[field]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b))
+}
+function fillCatalogSelect(id,values,placeholder){
+ const element=$(id),prior=element.value;element.replaceChildren();
+ const empty=document.createElement('option');empty.value='';empty.textContent=placeholder;element.appendChild(empty);
+ for(const name of values){const opt=document.createElement('option');opt.value=name;opt.textContent=name;element.appendChild(opt)}
+ if(values.includes(prior))element.value=prior;
+}
+function fillCatalogFilters(){
+ fillCatalogSelect('catalogAlbum',availableCatalogValues('album'),'All releases');
+ fillCatalogSelect('catalogLanguage',availableCatalogValues('language'),'All languages');
+ fillCatalogSelect('catalogMood',availableCatalogValues('mood'),'All moods');
+ fillCatalogSelect('catalogStyle',availableCatalogValues('style'),'All styles');
+}
+function filteredCatalog(){
+ const f=catalogFilterState(),query=f.query.toLocaleLowerCase().trim(),min=f.bpmMin===''?null:Number(f.bpmMin),max=f.bpmMax===''?null:Number(f.bpmMax);
+ return catalogEntries.map(catalogTrack).filter(x=>{
+  if(f.album&&x.album!==f.album)return false;
+  if(f.publication&&x.releaseStatus!==f.publication)return false;
+  if(f.language&&String(x.language||'')!==f.language)return false;
+  if(f.mood&&String(x.mood||'')!==f.mood)return false;
+  if(f.style&&String(x.style||'')!==f.style)return false;
+  if(min!==null&&!(Number(x.bpm)>=min))return false;
+  if(max!==null&&!(Number(x.bpm)<=max))return false;
+  if(query&&![x.title,x.album,x.artist,x.language,x.mood,x.style,x.isrc].some(y=>String(y||'').toLocaleLowerCase().includes(query)))return false;
+  return true
+ }).sort((a,b)=>{
+  if(f.sort==='bpm'){const aa=a.bpm==null?Infinity:Number(a.bpm),bb=b.bpm==null?Infinity:Number(b.bpm);return aa-bb||a.title.localeCompare(b.title)}
+  if(f.sort==='title')return a.title.localeCompare(b.title);
+  return a.album.localeCompare(b.album)||a.title.localeCompare(b.title)
+ })
+}
+function catalogButton(label,callback){
+ const b=document.createElement('button');b.type='button';b.className='btn alt tiny';b.textContent=label;b.onclick=callback;return b
+}
+function renderCatalog(){
+ if(!catalogReady)return;
+ const results=filteredCatalog();
+ const playable=results.filter(x=>playableCatalogTrack(x));
+ const unknown=results.filter(x=>x.bpm==null).length;
+ $('catalogCounter').textContent=results.length+' catalog matches · '+playable.length+' available locally · '+unknown+' BPM unknown · '+(catalogEntries.length-results.length)+' hidden by filters';
+ const list=$('catalogList');list.replaceChildren();
+ const visible=results.slice(0,catalogShowLimit);
+ if(!visible.length){const p=document.createElement('p');p.className='empty';p.textContent='No records match these filters. Try clearing BPM or changing release.';list.appendChild(p)}
+ for(const item of visible){
+  const music=playableCatalogTrack(item);
+  const row=document.createElement('div');row.className='catalog-item'+(music?' catalog-playable':'');row.setAttribute('role','listitem');
+  const title=document.createElement('div');title.className='catalog-item-title';title.textContent=item.title;
+  const details=document.createElement('div');details.className='catalog-item-sub';details.textContent=item.album+' · '+(item.releaseStatus==='published'?'PUBLISHED':'UNRELEASED')+' · '+(item.bpm==null?'BPM ?':item.bpm+' BPM')+' · '+(item.language||'Language ?')+' · '+(item.mood||'Mood ?')+' · '+(item.style||'Style ?');
+  row.append(title,details);
+  const actions=document.createElement('div');actions.className='catalog-item-actions';
+  if(music)actions.append(catalogButton('▶ Play',()=>{catalogQueueIds=filteredCatalog().map(playableCatalogTrack).filter(Boolean).map(x=>x.id);selectTrack(music.id)}));
+  else{
+   const input=document.createElement('input');input.type='file';input.hidden=true;input.accept='audio/*,.mp3,.m4a,.wav,.flac';
+   input.onchange=async()=>{const file=input.files?.[0];if(!file)return;await importFiles([file],{assignTo:item.title});const found=allMeta().find(x=>matches(item.title,x.name));if(found){catalogAssignments[item.id]=found.id;storeLocal(CATALOG_ASSIGN_KEY,catalogAssignments)}renderCatalog()};
+   actions.append(catalogButton('Assign audio',()=>input.click()),input)
+  }
+  actions.append(catalogButton('Edit tags',()=>openCatalogEditor(item)));
+  row.append(actions);list.appendChild(row)
+ }
+ $('catalogMore').classList.toggle('hidden',results.length<=catalogShowLimit)
+}
+function openCatalogEditor(track){
+ catalogEditingId=track.id;const item=catalogTrack(track);
+ $('tagEditorTitle').textContent='Tags: '+item.title+' · '+item.album;
+ $('tagBpm').value=item.bpm==null?'':String(item.bpm);
+ $('tagLanguage').value=item.language||'';$('tagMood').value=item.mood||'';$('tagStyle').value=item.style||'';
+ $('tagEditor').classList.remove('hidden');$('tagEditor').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+$('tagSave').onclick=()=>{
+ if(!catalogEditingId)return;
+ const bpmRaw=$('tagBpm').value.trim(),bpm=bpmRaw?Number(bpmRaw):null;
+ if(bpm!==null&&(!Number.isFinite(bpm)||bpm<30||bpm>300)){msg('BPM must be between 30 and 300, or blank.',true);return}
+ catalogTags[catalogEditingId]={bpm,language:$('tagLanguage').value.trim(),mood:$('tagMood').value.trim(),style:$('tagStyle').value.trim()};
+ storeLocal(CATALOG_TAG_KEY,catalogTags);
+ $('tagEditor').classList.add('hidden');catalogEditingId=null;
+ fillCatalogFilters();renderCatalog()
+};
+$('tagCancel').onclick=()=>{$('tagEditor').classList.add('hidden');catalogEditingId=null};
+function catalogPlayableQueue(){
+ return [...new Set(filteredCatalog().map(playableCatalogTrack).filter(Boolean).map(x=>x.id))]
+}
+function playCatalog(shuffled){
+ catalogQueueIds=catalogPlayableQueue();
+ if(!catalogQueueIds.length){msg('No local audio matches this filter. Import the corresponding album or song files first.',true);return}
+ tab='catalog';playbackContext='catalog';
+ if(shuffled!==null){shuffle=shuffled;saveModes();updateModes()}
+ rebuildQueue(catalogQueueIds[0]);selectTrack(catalogQueueIds[0],true)
+}
+$('playCatalog').onclick=()=>playCatalog(false);
+$('shuffleCatalog').onclick=()=>playCatalog(true);
+const CATALOG_FILTER_IDS=['catalogQuery','catalogAlbum','catalogPublished','catalogLanguage','catalogMood','catalogStyle','catalogSort','catalogBpmMin','catalogBpmMax'];
+for(const id of CATALOG_FILTER_IDS)$(id).addEventListener('input',()=>{catalogShowLimit=55;renderCatalog()});
+$('catalogMore').onclick=()=>{catalogShowLimit+=55;renderCatalog()};
+function fillSavedCatalogPlaylists(){
+ const select=$('catalogSavedPlaylists');select.replaceChildren();
+ const empty=document.createElement('option');empty.value='';empty.textContent='Saved playlists…';select.appendChild(empty);
+ for(let i=0;i<catalogPlaylists.length;i++){const opt=document.createElement('option');opt.value=String(i);opt.textContent=catalogPlaylists[i].name;select.appendChild(opt)}
+}
+$('saveCatalogPlaylist').onclick=()=>{
+ const name=window.prompt('Name this saved filter playlist:', 'PTIV playlist '+(catalogPlaylists.length+1));if(!name?.trim())return;
+ catalogPlaylists.push({name:name.trim().slice(0,70),filters:catalogFilterState(),createdAt:new Date().toISOString()});
+ if(catalogPlaylists.length>50)catalogPlaylists=catalogPlaylists.slice(-50);
+ storeLocal(CATALOG_PLAYLISTS_KEY,catalogPlaylists);fillSavedCatalogPlaylists()
+};
+$('loadCatalogPlaylist').onclick=()=>{
+ const k=$('catalogSavedPlaylists').value;if(!k)return;const item=catalogPlaylists[Number(k)];if(!item)return;
+ for(const [name,id] of [['query','catalogQuery'],['album','catalogAlbum'],['publication','catalogPublished'],['language','catalogLanguage'],['mood','catalogMood'],['style','catalogStyle'],['sort','catalogSort'],['bpmMin','catalogBpmMin'],['bpmMax','catalogBpmMax']])$(id).value=String(item.filters[name]||'');
+ catalogShowLimit=55;renderCatalog()
+};
+async function loadPTIVCatalog(){
+ try{
+  const response=await fetch('./ptiv-catalog.json',{cache:'no-cache'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();
+  if(data.schema!=='ptiv-walkman-catalog-v1'||!Array.isArray(data.tracks)||data.tracks.length<131)throw Error('Invalid catalog index');
+  catalogEntries=data.tracks;catalogReady=true;
+  fillCatalogFilters();fillSavedCatalogPlaylists();renderCatalog();
+  $('catalogInfo').textContent='Dated Too Lost export as of '+data.asOf+' ('+data.publishedCount+' published entries). '+data.ghostDraftCount+' unreleased Ghost draft entries shown separately. This is an index, not music streaming. Local tags and audio assignments remain on this device.';
+ }catch(e){
+  catalogReady=false;
+  $('catalogInfo').textContent='Catalog file not available on this device yet ('+(e.message||e)+'). Open once online after installing; offline cache will save it. Your existing music and lyrics are unaffected.'
+ }
+}
+
+function setTab(t){tab=t;$('tabGhost').classList.toggle('active',t==='ghost');$('tabAll').classList.toggle('active',t==='all');$('ghostPanel').classList.toggle('hidden',t!=='ghost');$('allPanel').classList.toggle('hidden',t!=='all');$('catalogPanel').classList.toggle('hidden',t!=='catalog');redraw()}$('tabGhost').onclick=()=>setTab('ghost');$('tabAll').onclick=()=>setTab('all');$('tabCatalog').onclick=()=>setTab('catalog');$('search').oninput=redraw;
+
+let mediaSessionConfigured=false,mediaPositionLast=0;
+function initMediaSession(){
+ if(mediaSessionConfigured||!('mediaSession' in navigator))return;
+ const handlers={
+  play:()=>{if(audio.src)audio.play().catch(()=>{});else $('play').click()},
+  pause:()=>audio.pause(),
+  nexttrack:()=>step(1),
+  previoustrack:()=>step(-1),
+  stop:()=>{audio.pause();audio.currentTime=0},
+  seekto:d=>{if(Number.isFinite(d.seekTime)&&Number.isFinite(audio.duration))audio.currentTime=Math.max(0,Math.min(audio.duration,d.seekTime))},
+  seekbackward:d=>{audio.currentTime=Math.max(0,audio.currentTime-(d.seekOffset||10))},
+  seekforward:d=>{if(Number.isFinite(audio.duration))audio.currentTime=Math.min(audio.duration,audio.currentTime+(d.seekOffset||10))}
+ };
+ for(const [type,fn] of Object.entries(handlers)){try{navigator.mediaSession.setActionHandler(type,fn)}catch(e){}}
+ mediaSessionConfigured=true;
+}
+function updateMediaSession(){
+ if(!active||!('mediaSession' in navigator))return;
+ try{
+  const row=allMeta().find(x=>x.id===active);
+  const catalogMatch=typeof catalogEntries!=='undefined'?catalogEntries.find(x=>matches(x.title,row?.name||'')):null;
+  navigator.mediaSession.metadata=new MediaMetadata({
+   title:row?.name||'PTIV Track',
+   artist:'P.T. Architech',
+   album:catalogMatch?.album||'PTIV Local Library'
+  });
+ }catch(e){}
+}
+function mediaPlaybackState(){try{if('mediaSession' in navigator)navigator.mediaSession.playbackState=audio.paused?'paused':'playing'}catch(e){}}
+function mediaPositionState(){
+ if(Date.now()-mediaPositionLast<2500)return;
+ mediaPositionLast=Date.now();
+ if(!Number.isFinite(audio.duration)||!audio.duration||!('mediaSession'in navigator))return;
+ try{navigator.mediaSession.setPositionState({duration:audio.duration,playbackRate:audio.playbackRate||1,position:Math.min(audio.duration,Math.max(0,audio.currentTime))})}catch(e){}
+}
+function setDeviceHint(){
+ const android=/Android/i.test(navigator.userAgent),watch=/Watch|Wear OS/i.test(navigator.userAgent);
+ const tip=$('deviceTip');
+ if(watch)tip.textContent='Small-screen companion: watch media controls may operate your Android phone. Native Wear OS player is separate.';
+ else if(android)tip.textContent='Samsung Galaxy: Chrome → ⋮ → Add to Home screen → Install app. Import audio locally on this phone; Android media controls can also work with a paired watch.';
+ else tip.textContent='iPhone: Safari → Share → Add to Home Screen. Music stays locally in the installed app.';
+ if(android)$('copyBackTap').classList.add('hidden');
+}
+
+initMediaSession();setDeviceHint();initModes();initDeck();initLyricFont();loadPTIVCatalog();(async()=>{try{db=await dbOpen();await loadIndex();await loadLyrics();msg('Offline library ready. Import your songs to begin.')}catch(e){dbIssue=e?.name||e?.message||'Unknown storage error';msg('Device storage unavailable ('+dbIssue+'): songs will play only until the app closes. Use a regular Safari tab, not Private Browsing, and install from your Home Screen.',true)}redraw();renderLyrics();await refreshStorage();if('serviceWorker'in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(()=>{});}})();
 </script></body></html>
