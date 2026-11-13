@@ -81,10 +81,22 @@ public final class PlaybackService extends Service {
     }
 
     public synchronized void setQueue(List<Track> tracks) {
+        Track previous=currentTrack();
         queue.clear();
         if (tracks != null) queue.addAll(tracks);
-        // The current Track is retained only if it exists in the new on-watch library.
-        if (currentIndex >= queue.size()) currentIndex = -1;
+        int allowedIndex=-1;
+        if (previous!=null) {
+            for (int i=0;i<queue.size();i++) {
+                if (queue.get(i).uri.equals(previous.uri)) { allowedIndex=i;break; }
+            }
+        }
+        if (previous!=null && allowedIndex<0) {
+            // Critical security and catalog guard: stop old non-PTIV playback.
+            releasePlayer();
+            stopForeground(STOP_FOREGROUND_REMOVE);
+        }
+        currentIndex=allowedIndex;
+        updateSession();
     }
 
     public synchronized List<Track> getQueue() { return new ArrayList<>(queue); }

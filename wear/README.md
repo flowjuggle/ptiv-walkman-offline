@@ -39,3 +39,6 @@ Wear OS app includes a **Speaker / earbuds: pair Bluetooth** button, opening the
 ## PTIV description style
 
 Use neutral music-first descriptions: tempo/BPM, mood, instrumentation, language, production, genre, arrangement and rhythm. **Never insert names of other artists or bands** in marketing descriptions or app-generated blurbs. Preserve source filenames, original lyrics, masters and dated distributor metadata as-is; any cleaned display title must retain evidence of its original source.
+
+## Catalog-only playback safety
+The watch media library fails closed: both a PTIV-authorized source (artist tag matching P.T. Architech, or a user-controlled Music/PTIV/ folder) and an exact allowlisted title from the dated distributor catalog are required. Duplicate titles across albums need a matching album tag. Unknown, unrelated and AutoSync tracks are excluded from the playback queue. Scanning a new library removes and stops any previously playing track excluded by the new allowlist. No source file is renamed or deleted.

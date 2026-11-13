@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.*;
+import java.text.Normalizer;
 
 public final class WatchActivity extends Activity {
     private static final int PERMISSION_MEDIA = 351;
@@ -258,6 +259,8 @@ public final class WatchActivity extends Activity {
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.RELATIVE_PATH,
             MediaStore.Audio.Media.DURATION
         };
         try (Cursor cursor = getContentResolver().query(
@@ -266,21 +269,34 @@ public final class WatchActivity extends Activity {
                 int idColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
                 int titleColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
                 int albumColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM);
+                int artistColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST);
+                int pathColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.RELATIVE_PATH);
                 int durColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
+                int rejected=0;
                 while (cursor.moveToNext() && songs.size()<2000) {
                     long duration=cursor.getLong(durColumn);
                     if (duration<3000L)continue;
+                    String title=cursor.getString(titleColumn);
+                    String album=cursor.getString(albumColumn);
+                    String artist=cursor.getString(artistColumn);
+                    String path=cursor.getString(pathColumn);
+                    // Fail closed: PTIV provenance AND exact catalog title. Never play arbitrary watch MP3s.
+                    if (!explicitPTIVSource(artist,path)) { rejected++; continue; }
+                    CatalogRow approved=authorizedCatalogMatch(title,album);
+                    if (approved==null) { rejected++; continue; }
                     long id=cursor.getLong(idColumn);
                     Uri uri=ContentUris.withAppendedId(source,id);
-                    songs.add(new PlaybackService.Track(uri,cursor.getString(titleColumn),
-                        cursor.getString(albumColumn),duration));
+                    songs.add(new PlaybackService.Track(uri,approved.title,approved.album,duration));
+                }
+                if (rejected>0) {
+                    statusText.setText(rejected+" other watch recordings excluded. Only authorized P.T. Architech catalog titles may play.");
                 }
             }
             if (player!=null)player.setQueue(songs);
-            libraryText.setText(songs.size()+" songs stored on watch");
+            libraryText.setText(songs.size()+" P.T. Architech tracks ready on watch");
             statusText.setText(songs.isEmpty() ?
-                "No watch audio found. Transfer an MP3/M4A to the watch with Galaxy Wearable or paired ADB, then rescan." :
-                "Local watch library ready. Playback works without phone or internet.");
+                "No authorized PTIV audio on watch. Transfer a catalog-matching MP3/M4A to Music/PTIV/, then rescan. Unrelated MP3s are excluded." :
+                "P.T. Architech only: "+songs.size()+" local tracks. Unrelated files are excluded. Playback works offline.");
             renderSongList();
         } catch (Exception e) {
             statusText.setText("Watch media scan failed: "+e.getClass().getSimpleName());
@@ -288,9 +304,35 @@ public final class WatchActivity extends Activity {
     }
 
     private static String key(String title){
-        return title==null?"":title.toLowerCase(Locale.ROOT)
-            .replaceAll("\\([^\\)]*\\)","")
-            .replaceAll("[^a-z0-9]","");
+        if(title==null)return "";
+        String n=Normalizer.normalize(title,Normalizer.Form.NFKD)
+            .replaceAll("\\p{M}+","").toLowerCase(Locale.ROOT);
+        // Suffixes are versions of the same supplied recording, not new words.
+        n=n.replaceAll("\\s*\\((remastered|mastered|\\d+)\\)\\s*$","");
+        return n.replaceAll("[^\\p{L}\\p{N}]","");
+    }
+    private CatalogRow authorizedCatalogMatch(String title,String album){
+        String wanted=key(title);
+        if(wanted.isEmpty())return null;
+        CatalogRow candidate=null;
+        int count=0;
+        for(CatalogRow row:catalogRows){
+            if(wanted.equals(key(row.title))){
+                if(album!=null && key(album).equals(key(row.album)))return row;
+                count++;
+                candidate=row;
+            }
+        }
+        // A reused title across releases needs a real album match; don't guess.
+        return count==1?candidate:null;
+    }
+    private boolean explicitPTIVSource(String artist,String relativePath){
+        if("ptarchitech".equals(key(artist)))return true;
+        if(relativePath==null)return false;
+        String path=relativePath.replace('\\','/').toLowerCase(Locale.ROOT);
+        return path.startsWith("music/ptiv/") ||
+               path.startsWith("music/p.t. architech/") ||
+               path.startsWith("music/pt architech/");
     }
     private void loadWatchCatalog() {
         catalogRows.clear();
@@ -326,7 +368,7 @@ public final class WatchActivity extends Activity {
                 String wanted=key(row.title);
                 for(int i=0;i<songs.size();i++){
                     String actual=key(songs.get(i).title);
-                    if(actual.equals(wanted)||actual.contains(wanted)||wanted.contains(actual)){
+                    if(actual.equals(wanted) && row.album.equals(songs.get(i).album)){
                         if(player!=null){player.setQueue(songs);player.playIndex(i);updatePlaybackDisplay();}
                         return;
                     }
