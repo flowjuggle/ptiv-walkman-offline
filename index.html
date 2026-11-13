@@ -10,6 +10,17 @@
 .speaker-guide{margin:12px 0;padding:11px 13px;border:1px solid #486a66;border-radius:12px;background:#132b2a}
 .speaker-guide summary{cursor:pointer;font-weight:750;color:var(--lime);list-style:revert}
 .speaker-guide p{font-size:13px;line-height:1.55;margin:10px 0;color:var(--muted)}
+.embed-controls{display:grid;gap:7px;margin:12px 0}
+.embed-controls label{font-weight:650;font-size:12px;color:var(--muted)}
+.embed-controls input,.embed-controls textarea{width:100%;box-sizing:border-box;font:inherit;max-width:100%;background:#112227;color:var(--ink);border:1px solid #5b7b76;border-radius:10px;padding:10px}
+.embed-row{border-bottom:1px solid #3a5554;padding:13px 1px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.embed-row .embed-label{font-weight:700;color:var(--ink);max-width:75%;overflow-wrap:anywhere}
+.embed-row .embed-provider{font-size:11px;color:var(--muted)}
+.embed-actions{display:flex;gap:7px;flex-wrap:wrap}
+#embeddedNow{margin:14px 0}
+#embeddedFrameHost{width:100%;border-radius:13px;overflow:hidden;background:#091419}
+#embeddedFrameHost iframe{width:100%;border:0;display:block;min-height:260px}
+@media(max-width:490px){.tabs{flex-wrap:wrap}.tab{flex:1 1 43%;min-width:0}.embed-row .embed-label{max-width:100%}}
 .catalog-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0}
 .catalog-filters label{font-size:12px;color:var(--muted);display:block}
 .catalog-filters select,.catalog-filters input,.tags-editor input,.playlist-select{width:100%;font:inherit;color:var(--ink);background:#0c1a1e;border:1px solid #556d69;border-radius:9px;padding:10px 7px}
@@ -39,9 +50,9 @@
 <p><strong>iPhone:</strong> Put the speaker in pairing mode, open Settings → Bluetooth, select it, then use the AirPlay/audio-output selector in Control Center if needed.</p>
 <p><strong>Galaxy Watch:</strong> In PTIV Walkman Watch, tap <strong>Speaker / earbuds: pair Bluetooth</strong> to open its Bluetooth settings. Pair the audio device directly with the watch for standalone playback.</p>
 <p class="hint">Bluetooth pairing is controlled by the operating system, not this web page. Once connected, local music playback remains offline.</p></details><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Track progress"><div class="timing"><span id="elapsed">0:00</span><span id="duration">0:00</span></div><p class="hint">Android Galaxy / iPhone: import songs from Files, then test Airplane Mode. Use MP3/AAC when a format is unsupported. Background playback and watch media controls depend on the device and OS.</p></section>
-<section class="panel" id="lyricsPanel"><div class="lyrics-heading"><h2>Verified Lyrics + AI Timing</h2><span class="badge" id="lyricsBadge">AWAITING VERIFIED LYRICS</span></div><p class="hint" id="lyricsSong">Choose a song to see its verified lyrics.</p><div class="inline lyrics-actions"><button class="btn alt" id="pickOriginal" type="button">Import original lyrics (JSON)</button><button class="btn alt" id="pickVerified" type="button">Import verified lyrics (JSON)</button><button class="btn alt" id="pickAITiming" type="button">Import AI timestamps (LRC)</button></div><input class="file" id="originalJson" type="file" multiple accept=".json,application/json"><input class="file" id="verifiedJson" type="file" multiple accept=".json,application/json"><input class="file" id="aiLrc" type="file" accept=".lrc,text/plain"><div class="lyric-tools"><label for="lyricFont">Text size</label><input type="range" id="lyricFont" min="14" max="36" step="2" value="20" aria-label="Lyrics font size"><output id="lyricFontValue" for="lyricFont">20 px</output><button class="btn alt tiny" id="lyricFontReset" type="button">Reset</button></div><div class="lyric-exports"><button class="btn alt" id="exportLyricTxt" type="button">Export TXT</button><button class="btn alt" id="exportLyricLrc" type="button">Export LRC</button><button class="btn alt" id="exportLyricRecord" type="button">Export Record JSON</button><button class="btn alt" id="exportAllLyrics" type="button">Export Library JSON</button></div><div id="lyricDisplay" class="lyricbox" role="region" aria-label="Verified song lyrics"><p class="lyrics-empty">Awaiting verified original lyrics and evidence receipt from the PTIV workbench.</p></div><p id="lyricsNote" class="lyrics-info">Original source lyrics can be viewed unchanged and clearly labeled SOURCE · NOT AUDIO-VERIFIED. A completed verification receipt upgrades them to VERIFIED. AI will timestamp verified words only; AI timing generation is not yet integrated into this iPhone app.</p></section><div class="tabs"><button class="tab active" id="tabGhost">Ghost in the Wire</button><button class="tab" id="tabAll">All my music</button><button class="tab" id="tabCatalog">PTIV Catalog</button></div>
+<section class="panel" id="lyricsPanel"><div class="lyrics-heading"><h2>Verified Lyrics + AI Timing</h2><span class="badge" id="lyricsBadge">AWAITING VERIFIED LYRICS</span></div><p class="hint" id="lyricsSong">Choose a song to see its verified lyrics.</p><div class="inline lyrics-actions"><button class="btn alt" id="pickOriginal" type="button">Import original lyrics (JSON)</button><button class="btn alt" id="pickVerified" type="button">Import verified lyrics (JSON)</button><button class="btn alt" id="pickAITiming" type="button">Import AI timestamps (LRC)</button></div><input class="file" id="originalJson" type="file" multiple accept=".json,application/json"><input class="file" id="verifiedJson" type="file" multiple accept=".json,application/json"><input class="file" id="aiLrc" type="file" accept=".lrc,text/plain"><div class="lyric-tools"><label for="lyricFont">Text size</label><input type="range" id="lyricFont" min="14" max="36" step="2" value="20" aria-label="Lyrics font size"><output id="lyricFontValue" for="lyricFont">20 px</output><button class="btn alt tiny" id="lyricFontReset" type="button">Reset</button></div><div class="lyric-exports"><button class="btn alt" id="exportLyricTxt" type="button">Export TXT</button><button class="btn alt" id="exportLyricLrc" type="button">Export LRC</button><button class="btn alt" id="exportLyricRecord" type="button">Export Record JSON</button><button class="btn alt" id="exportAllLyrics" type="button">Export Library JSON</button></div><div id="lyricDisplay" class="lyricbox" role="region" aria-label="Verified song lyrics"><p class="lyrics-empty">Awaiting verified original lyrics and evidence receipt from the PTIV workbench.</p></div><p id="lyricsNote" class="lyrics-info">Original source lyrics can be viewed unchanged and clearly labeled SOURCE · NOT AUDIO-VERIFIED. A completed verification receipt upgrades them to VERIFIED. AI will timestamp verified words only; AI timing generation is not yet integrated into this iPhone app.</p></section><div class="tabs"><button class="tab active" id="tabGhost">Ghost in the Wire</button><button class="tab" id="tabAll">All my music</button><button class="tab" id="tabCatalog">PTIV Catalog</button><button class="tab" id="tabEmbeds">Embedded players</button></div>
 <section class="panel" id="ghostPanel"><h2>Ghost in the Wire <small>· 12-title draft playlist</small></h2><p class="hint">Songs are matched by their filenames. If a track is unmatched, tap <strong>Assign</strong> and choose its audio file. Every imported track also appears in All my music.</p><ol id="ghostList"></ol></section>
-<section class="panel hidden" id="allPanel"><h2>All my music</h2><input class="search" id="search" placeholder="Search songs or folders…" aria-label="Search imported songs"><div id="allList"></div><p class="hint">The list comes from your device, not the NAS. Import additional folders anytime; duplicates are skipped.</p></section>
+<section class="panel hidden" id="allPanel"><h2>My Offline Music · Personal Library</h2><p class="hint">No account or subscription required. Choose MP3, M4A, AAC, WAV, FLAC or other supported audio from this phone. These files are stored in this device's local library and <strong>never enter the P.T. Architech-only watch queue automatically.</strong></p><button class="btn" type="button" id="importPersonal">＋ Add my own offline music</button><input class="search" id="search" placeholder="Search songs or folders…" aria-label="Search imported songs"><div id="allList"></div><p class="hint">The list comes from your device, not the NAS. Import additional folders anytime; duplicates are skipped.</p></section>
 
 <section class="panel hidden" id="catalogPanel">
  <h2>PTIV Catalog · Playlists</h2>
@@ -77,6 +88,22 @@
  <div id="catalogList" role="list"></div>
  <button class="btn alt hidden" type="button" id="catalogMore">Show more tracks</button>
  <p class="hint">131 published entries reflect your dated 2026-10-12 Too Lost export; the unreleased Ghost draft is listed separately. BPM/mood/style/language show Unknown until sourced or tagged. The catalogue is an index, not a streaming service; songs are playable once imported on this device.</p>
+</section>
+
+<section class="panel hidden" id="embedsPanel">
+ <h2>My Embedded Players · Guest Mode</h2>
+ <p class="hint">Save links to players you own or want to follow, without making a PTIV account. Paste a supported music link or the <strong>iframe code</strong> from its Share → Embed menu. Only the link is stored on this device; the external service streams its own content and may require its own login or subscription.</p>
+ <div class="embed-controls">
+  <label for="embedName">Player label (optional)</label>
+  <input id="embedName" maxlength="90" placeholder="e.g. P.T. Architech · favorite set" autocomplete="off"/>
+  <label for="embedUrl">Music URL or iframe embed code</label>
+  <textarea id="embedUrl" rows="3" maxlength="2800" placeholder="Paste a YouTube, Spotify, SoundCloud, Apple Music or Bandcamp player link" spellcheck="false"></textarea>
+  <button class="btn" id="addEmbed" type="button">＋ Save embedded player</button>
+  <button class="btn alt" id="importFromEmbeds" type="button">＋ Import my offline audio instead</button>
+ </div>
+ <p class="hint" id="embedStatus">Supported: YouTube, Spotify, SoundCloud, Apple Music and Bandcamp embed codes. Each provider's playback permissions apply.</p>
+ <div id="embedsList" aria-live="polite"></div>
+ <div id="embeddedNow" class="hidden"><h3 id="embeddedTitle">Embedded player</h3><div id="embeddedFrameHost"></div><button class="btn alt" id="stopEmbedded" type="button">Stop / close embedded player</button><p class="hint">Embedded streaming needs internet; this is <strong>not</strong> an offline download. For offline playback, import audio files with permission through My Offline Music.</p></div>
 </section>
 <footer><strong>Install:</strong> iPhone: open in regular Safari → Share → Add to Home Screen. Samsung Galaxy / Android: open in Chrome → ⋮ → Add to Home screen → Install app (wording varies). Import music in the installed app separately on each device. Galaxy Watch can control phone playback via Android media controls when supported; a standalone watch player requires its own installed Wear OS app and audio on the watch. The interface and imported files can work offline once cached. Keep master copies in Files or NAS: phones may clear app data under storage pressure.</footer>
 </main>
@@ -262,7 +289,7 @@ function saveModes(){try{localStorage.setItem(MODE_KEY,JSON.stringify({continuou
 function initModes(){try{const modes=JSON.parse(localStorage.getItem(MODE_KEY)||'null');if(modes){continuous=modes.continuous!==false;shuffle=modes.shuffle===true}}catch(e){}updateModes()}
 $('continuous').onclick=()=>{continuous=!continuous;saveModes();updateModes()};
 $('shuffle').onclick=()=>{shuffle=!shuffle;rebuildQueue(active);saveModes();updateModes()};
-async function selectTrack(id,fromQueue=false){let row;try{row=await getTrack(id)}catch(e){msg('File is missing from local storage. Select it again in Files.',true);return}if(!row?.blob){msg('Song not saved. Please reimport it.',true);return}try{if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(row.blob);active=id;if(!fromQueue||!playIds.includes(id)){playbackContext=tab;rebuildQueue(id)}audio.src=audioUrl;audio.load();$('now').textContent=row.name;const displayCatalog=catalogEntries.find(x=>matches(x.title,row.name));$('cassetteTitle').textContent=displayCatalog?.album||lyricsForCurrent()?.album||'PTIV Local Library';redraw();renderLyrics();renderDeck();updateMediaSession();await audio.play()}catch(e){msg('Song loaded. Tap ▶ Play once more if iPhone blocked autoplay; or try an MP3/AAC copy.',true)}}
+async function selectTrack(id,fromQueue=false){stopEmbedded();let row;try{row=await getTrack(id)}catch(e){msg('File is missing from local storage. Select it again in Files.',true);return}if(!row?.blob){msg('Song not saved. Please reimport it.',true);return}try{if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(row.blob);active=id;if(!fromQueue||!playIds.includes(id)){playbackContext=tab;rebuildQueue(id)}audio.src=audioUrl;audio.load();$('now').textContent=row.name;const displayCatalog=catalogEntries.find(x=>matches(x.title,row.name));$('cassetteTitle').textContent=displayCatalog?.album||lyricsForCurrent()?.album||'PTIV Local Library';redraw();renderLyrics();renderDeck();updateMediaSession();await audio.play()}catch(e){msg('Song loaded. Tap ▶ Play once more if iPhone blocked autoplay; or try an MP3/AAC copy.',true)}}
 $('play').onclick=()=>{if(audio.paused){if(active&&audio.src){audio.play().catch(()=>msg('Tap ▶ Play again, or use MP3/AAC if this format is unsupported.',true))}else{let first=tab==='ghost'?ghost.map(t=>ghostMatch(t)?.id).find(Boolean):allMeta()[0]?.id;if(first)selectTrack(first);else msg('Choose music files or a folder first.',true)}}else audio.pause()};
 function step(dir,automatic=false){if(automatic&&!continuous)return;if(!playIds.length){msg('Import songs first.',true);return}let k=playIds.indexOf(active);if(k<0)k=0;if(automatic&&shuffle&&dir>0&&k===playIds.length-1&&playIds.length>1){rebuildQueue(active);k=0}const next=playIds[(k+dir+playIds.length)%playIds.length];if(next)selectTrack(next,true)}
 $('next').onclick=()=>step(1);$('prev').onclick=()=>audio.currentTime>4?audio.currentTime=0:step(-1);
@@ -412,7 +439,132 @@ async function loadPTIVCatalog(){
  }
 }
 
-function setTab(t){tab=t;$('tabGhost').classList.toggle('active',t==='ghost');$('tabAll').classList.toggle('active',t==='all');$('ghostPanel').classList.toggle('hidden',t!=='ghost');$('allPanel').classList.toggle('hidden',t!=='all');$('catalogPanel').classList.toggle('hidden',t!=='catalog');redraw()}$('tabGhost').onclick=()=>setTab('ghost');$('tabAll').onclick=()=>setTab('all');$('tabCatalog').onclick=()=>setTab('catalog');$('search').oninput=redraw;
+
+const EMBEDS_KEY='ptiv-walkman-guest-embeds-v1';
+let guestEmbeds=localObj(EMBEDS_KEY,[]);
+if(!Array.isArray(guestEmbeds))guestEmbeds=[];
+guestEmbeds=guestEmbeds.filter(x=>x&&typeof x.url==='string'&&typeof x.label==='string'&&typeof x.provider==='string').slice(0,80);
+const embedStatus=(message,bad=false)=>{$('embedStatus').textContent=message;$('embedStatus').classList.toggle('warning',bad)};
+function validatedEmbed(input) {
+ const raw=String(input||'').trim();
+ if(!raw||raw.length>2800)throw Error('Paste a valid supported music link or iframe code.');
+ // Parse markup only to extract the URL. Never insert pasted HTML into this application.
+ let value=raw;
+ if(raw.startsWith('<')){
+  const documentFragment=new DOMParser().parseFromString(raw,'text/html');
+  const iframe=documentFragment.querySelector('iframe');
+  if(!iframe)throw Error('Only provider iframe embed codes are accepted; pasted scripts/HTML are not executed.');
+  value=iframe.getAttribute('src')||'';
+ }
+ let u;
+ try{u=new URL(value)}catch(e){throw Error('The link must start with https:// and use a supported music provider.')}
+ if(u.protocol!=='https:'||u.username||u.password)throw Error('Only secure HTTPS music-provider links can be embedded.');
+ const host=u.hostname.toLowerCase(),parts=u.pathname.split('/').filter(Boolean);
+ const id=/^[a-zA-Z0-9_-]{11}$/,playlist=/^[a-zA-Z0-9_-]{10,100}$/;
+ const name=(provider,url)=>({provider,url});
+ if(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','www.youtube-nocookie.com','youtube-nocookie.com','youtu.be','www.youtu.be'].includes(host)){
+  let v=host.endsWith('youtu.be')?parts[0]:parts[0]==='watch'?u.searchParams.get('v'):['embed','shorts','live'].includes(parts[0])?parts[1]:null;
+  if(id.test(v||''))return name('YouTube','https://www.youtube-nocookie.com/embed/'+v+'?playsinline=1');
+  let list=u.searchParams.get('list');
+  if(parts[0]==='playlist'&&playlist.test(list||''))return name('YouTube playlist','https://www.youtube-nocookie.com/embed/videoseries?list='+encodeURIComponent(list));
+  throw Error('Provide a YouTube video, Short, or playlist URL.');
+ }
+ if(host==='open.spotify.com'){
+  let type=parts[0]==='embed'?parts[1]:parts[0],identifier=parts[0]==='embed'?parts[2]:parts[1];
+  if(['track','album','playlist','episode','show','artist'].includes(type)&&/^[a-zA-Z0-9]{12,40}$/.test(identifier||'')){
+   return name('Spotify','https://open.spotify.com/embed/'+type+'/'+identifier);
+  }
+  throw Error('Provide a Spotify track, album, playlist, or podcast embed link.');
+ }
+ if(host==='soundcloud.com'||host==='www.soundcloud.com'||host==='on.soundcloud.com'){
+  if(parts.length<2&&host!=='on.soundcloud.com')throw Error('Provide a SoundCloud track or playlist, not a profile homepage.');
+  return name('SoundCloud','https://w.soundcloud.com/player/?url='+encodeURIComponent(u.toString())+'&auto_play=false');
+ }
+ if(host==='w.soundcloud.com'){
+  if(!u.pathname.startsWith('/player'))throw Error('Invalid SoundCloud player.');
+  let nested;
+  try{nested=new URL(u.searchParams.get('url')||'')}catch(e){throw Error('Missing SoundCloud track URL.')}
+  if(nested.protocol!=='https:'||!(
+  ['soundcloud.com','www.soundcloud.com','on.soundcloud.com'].includes(nested.hostname)||
+  nested.hostname==='api.soundcloud.com'&&/^\/(tracks|playlists)\/\d{1,25}\/?$/.test(nested.pathname)
+ ))throw Error('Unsupported SoundCloud track URL.');
+  return name('SoundCloud','https://w.soundcloud.com/player/?url='+encodeURIComponent(nested.toString())+'&auto_play=false');
+ }
+ if(host==='music.apple.com'||host==='embed.music.apple.com'){
+  if(parts.length<3||!['album','playlist','music-video','song'].includes(parts[1]))throw Error('Provide an Apple Music song, album, or playlist link.');
+  return name('Apple Music','https://embed.music.apple.com'+u.pathname+(u.searchParams.get('i')?'?i='+encodeURIComponent(u.searchParams.get('i')):''));
+ }
+ if(host==='bandcamp.com' || host==='www.bandcamp.com'){
+  if(!u.pathname.toLowerCase().startsWith('/embeddedplayer/'))throw Error('For Bandcamp, use Share → Embed → copy the iframe code (not the ordinary album page).');
+  if(!/^(?:album|track)=(?:\d{1,20})/.test(u.pathname.slice('/EmbeddedPlayer/'.length)))throw Error('Invalid Bandcamp album/track embed.');
+  return name('Bandcamp',u.origin+u.pathname);
+ }
+ throw Error('Provider not supported. Try a YouTube, Spotify, SoundCloud, Apple Music, or Bandcamp embed link.');
+}
+function saveEmbeds(){
+ if(!storeLocal(EMBEDS_KEY,guestEmbeds))embedStatus('Could not persist embedded links on this device. Try a regular browser tab.',true);
+}
+function stopEmbedded(){
+ $('embeddedFrameHost').replaceChildren();
+ $('embeddedNow').classList.add('hidden');
+}
+function openEmbedded(item){
+ stopEmbedded();
+ const parsed=validatedEmbed(item.url);
+ audio.pause();
+ const frame=document.createElement('iframe');
+ frame.src=parsed.url;
+ frame.title=item.label+' · '+item.provider;
+ frame.loading='lazy';
+ frame.referrerPolicy='strict-origin-when-cross-origin';
+ frame.allow='autoplay; encrypted-media; fullscreen; picture-in-picture';
+ frame.allowFullscreen=true;
+ frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-presentation allow-forms');
+ frame.style.height=parsed.provider==='YouTube'||parsed.provider==='YouTube playlist'?'300px':'330px';
+ $('embeddedFrameHost').appendChild(frame);
+ $('embeddedTitle').textContent=item.label+' · '+item.provider;
+ $('embeddedNow').classList.remove('hidden');
+ embedStatus('Opened '+item.provider+' player. Provider may require an account, internet, or a subscription.');
+ $('embeddedNow').scrollIntoView({block:'start',behavior:'smooth'});
+}
+function renderEmbeds(){
+ const list=$('embedsList');list.replaceChildren();
+ if(!guestEmbeds.length){
+  const p=document.createElement('p');p.className='hint';
+  p.textContent='No embedded players saved yet. Paste a supported music link or iframe share code above.';
+  list.appendChild(p);return;
+ }
+ guestEmbeds.forEach((item,i)=>{
+  const row=document.createElement('div');row.className='embed-row';
+  const description=document.createElement('div');
+  const title=document.createElement('div');title.className='embed-label';title.textContent=item.label;
+  const label=document.createElement('div');label.className='embed-provider';label.textContent=item.provider+' · Online player';
+  description.append(title,label);
+  const actions=document.createElement('div');actions.className='embed-actions';
+  actions.append(button('▶ Open',()=>{try{openEmbedded(item)}catch(e){embedStatus(e.message,true)}}));
+  actions.append(button('Remove',()=>{
+   if(!confirm('Remove this saved player link? The provider content will not be deleted.'))return;
+   guestEmbeds.splice(i,1);saveEmbeds();stopEmbedded();renderEmbeds();
+  }));
+  row.append(description,actions);list.appendChild(row);
+ });
+}
+$('addEmbed').onclick=()=>{
+ try{
+  const parsed=validatedEmbed($('embedUrl').value),label=$('embedName').value.trim().slice(0,90)||parsed.provider+' saved player';
+  if(guestEmbeds.length>=80)throw Error('Limit: 80 saved embeds per device. Remove an old one first.');
+  if(guestEmbeds.some(x=>x.url===parsed.url)){throw Error('That player is already saved on this device.')}
+  guestEmbeds.unshift({url:parsed.url,provider:parsed.provider,label});
+  saveEmbeds();renderEmbeds();embedStatus('Saved '+parsed.provider+' player on this device. No PTIV login required.');
+  $('embedUrl').value='';$('embedName').value='';
+ }catch(e){embedStatus(e.message,true)}
+};
+$('stopEmbedded').onclick=stopEmbedded;
+$('importFromEmbeds').onclick=()=>{$('files').click();embedStatus('Select your own music files; they will be stored locally for offline use.')};
+$('importPersonal').onclick=()=>$('files').click();
+renderEmbeds();
+
+function setTab(t){if(tab==='embeds'&&t!=='embeds')stopEmbedded();tab=t;$('tabGhost').classList.toggle('active',t==='ghost');$('tabAll').classList.toggle('active',t==='all');$('tabEmbeds').classList.toggle('active',t==='embeds');$('ghostPanel').classList.toggle('hidden',t!=='ghost');$('allPanel').classList.toggle('hidden',t!=='all');$('catalogPanel').classList.toggle('hidden',t!=='catalog');$('embedsPanel').classList.toggle('hidden',t!=='embeds');redraw()}$('tabGhost').onclick=()=>setTab('ghost');$('tabAll').onclick=()=>setTab('all');$('tabCatalog').onclick=()=>setTab('catalog');$('tabEmbeds').onclick=()=>setTab('embeds');$('search').oninput=redraw;
 
 let mediaSessionConfigured=false,mediaPositionLast=0;
 function initMediaSession(){

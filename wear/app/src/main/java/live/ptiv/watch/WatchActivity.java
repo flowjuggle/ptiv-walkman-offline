@@ -497,6 +497,7 @@ public final class WatchActivity extends Activity {
                 "No authorized PTIV audio on watch. Transfer a catalog-matching MP3/M4A to Music/PTIV/, then rescan. Unrelated MP3s are excluded." :
                 "P.T. Architech only: "+songs.size()+" local tracks. Unrelated files are excluded. Playback works offline.");
             renderSongList();
+            renderWatchCatalog();
         } catch (Exception e) {
             statusText.setText("Watch media scan failed: "+e.getClass().getSimpleName());
         }
@@ -556,30 +557,47 @@ public final class WatchActivity extends Activity {
         if(catalogList==null||catalogSearch==null)return;
         catalogList.removeAllViews();
         String query=catalogSearch.getText().toString().toLowerCase(Locale.ROOT).trim();
-        int matched=0,shown=0;
+        int matched=0,shown=0,available=0;
         for(CatalogRow row:catalogRows){
             if(!query.isEmpty() && !row.title.toLowerCase(Locale.ROOT).contains(query)
                 && !row.album.toLowerCase(Locale.ROOT).contains(query))continue;
             matched++;
+            int found=-1;
+            for(int i=0;i<songs.size();i++){
+                if(key(row.title).equals(key(songs.get(i).title)) &&
+                    row.album.equals(songs.get(i).album)){ found=i;break; }
+            }
+            if(found>=0)available++;
             if(shown>=20)continue;
             shown++;
-            Button b=button(row.title+" · "+row.album+(row.status.equals("unreleased")?" · UNRELEASED":""),v->{
-                String wanted=key(row.title);
-                for(int i=0;i<songs.size();i++){
-                    String actual=key(songs.get(i).title);
-                    if(actual.equals(wanted) && row.album.equals(songs.get(i).album)){
-                        if(player!=null){player.setQueue(songs);player.playIndex(i);updatePlaybackDisplay();}
-                        return;
-                    }
+            final int target=found;
+            final String label=found>=0?"PLAY  ":"NOT ON WATCH  ";
+            Button b=button(label+row.title+" - "+row.album+
+                (row.status.equals("unreleased")?" - UNRELEASED":""),v->{
+                if(target<0){
+                    statusText.setText("Not downloaded. Open P.T. Architech Companion on Samsung and transfer this recording.");
+                    return;
                 }
-                statusText.setText("This catalog title isn't stored on the watch. Transfer the audio first.");
+                if(player==null){
+                    statusText.setText("Watch player is connecting; wait a moment and try again.");
+                    return;
+                }
+                player.setQueue(songs);
+                player.playIndex(target);
+                lyricTrackKey="";
+                updatePlaybackDisplay();
+                if(!player.isPlaying() && !player.getLastError().isEmpty()){
+                    statusText.setText("PLAYBACK FAILED: "+player.getLastError());
+                }
             });
             b.setTextSize(11);
+            b.setAlpha(target>=0?1f:.66f);
             catalogList.addView(b,new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,dp(50)));
         }
-        catalogSummary.setText(catalogRows.size()+" catalog entries · "+matched+
-            " matching · showing "+shown+" · separate watch music storage");
+        catalogSummary.setText(catalogRows.size()+" P.T. Architech catalog titles; "+
+            songs.size()+" audio files on watch; "+available+" playable in this search; "+
+            shown+" shown. NOT ON WATCH titles must be transferred before playback.");
     }
 
     private void renderSongList() {
