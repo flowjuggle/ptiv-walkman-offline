@@ -15,5 +15,12 @@
     </activity>
     <service android:name=".PlaybackService" android:exported="false"
              android:foregroundServiceType="mediaPlayback"/>
+    <service android:name=".CompanionReceiver"
+             android:exported="true">
+      <intent-filter>
+        <action android:name="com.google.android.gms.wearable.DATA_CHANGED"/>
+        <data android:scheme="wear" android:host="*" android:pathPrefix="/ptiv/"/>
+      </intent-filter>
+    </service>
   </application>
 </manifest>

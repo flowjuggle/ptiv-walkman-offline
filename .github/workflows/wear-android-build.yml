@@ -28,10 +28,16 @@ jobs:
           gradle-version: '8.9'
       - name: Build debug APK
         working-directory: wear
-        run: gradle --no-daemon :app:assembleDebug
+        run: gradle --no-daemon :app:assembleDebug :mobile:assembleDebug
       - name: Upload watch APK
         uses: actions/upload-artifact@v4
         with:
           name: PTIV-Walkman-WearOS-test-APK
           path: wear/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Upload signed-matching Samsung companion APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-Companion-Android-test-APK
+          path: wear/mobile/build/outputs/apk/debug/mobile-debug.apk
           if-no-files-found: error
