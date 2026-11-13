@@ -43,6 +43,9 @@ public final class WatchActivity extends Activity {
         }
     }
     private CassetteView cassette;
+    private SeekBar volumeSlider;
+    private TextView volumeLabel;
+    private boolean volumeSliderActive=false;
     private View basePage;
     private FrameLayout cosmicRoot;
     private CosmicView cosmic;
@@ -153,6 +156,43 @@ public final class WatchActivity extends Activity {
             transport.addView(b,new LinearLayout.LayoutParams(0,dp(60),1));
         }
         root.addView(transport);
+
+        // Always-visible media volume controls are the reliable alternative
+        // to two-finger gestures on small screens and with accessibility enabled.
+        volumeLabel=label("MEDIA VOLUME · loading",12,LIME);
+        root.addView(volumeLabel);
+        LinearLayout volumeRow=new LinearLayout(this);
+        volumeRow.setOrientation(LinearLayout.HORIZONTAL);
+        volumeRow.setGravity(Gravity.CENTER_VERTICAL);
+        Button volumeDown=button("VOL −",v->changeMusicVolume(-1));
+        Button volumeUp=button("VOL +",v->changeMusicVolume(1));
+        volumeDown.setContentDescription("Reduce music volume by one step");
+        volumeUp.setContentDescription("Increase music volume by one step");
+        volumeRow.addView(volumeDown,new LinearLayout.LayoutParams(dp(88),dp(54)));
+        volumeRow.addView(volumeUp,new LinearLayout.LayoutParams(dp(88),dp(54)));
+        root.addView(volumeRow);
+        volumeSlider=new SeekBar(this);
+        volumeSlider.setContentDescription("Media volume slider for music and Bluetooth speakers");
+        volumeSlider.setMax(audioManager==null?15:Math.max(1,audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
+        volumeSlider.setProgress(audioManager==null?0:audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        volumeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            @Override public void onStartTrackingTouch(SeekBar bar){volumeSliderActive=true;}
+            @Override public void onProgressChanged(SeekBar bar,int value,boolean fromUser){
+                if(fromUser)applyMusicVolume(value,false);
+            }
+            @Override public void onStopTrackingTouch(SeekBar bar){
+                volumeSliderActive=false;
+                updateVolumeControls();
+            }
+        });
+        root.addView(volumeSlider,new LinearLayout.LayoutParams(-1,dp(44)));
+        root.addView(button("Open Samsung sound / media volume settings",v->{
+            try{startActivity(new Intent(Settings.ACTION_SOUND_SETTINGS));}
+            catch(Exception e){
+                statusText.setText("Open Watch Settings > Sounds and vibration > Volume > Media.");
+            }
+        }),new LinearLayout.LayoutParams(-1,dp(48)));
+        updateVolumeControls();
 
         LinearLayout modes = new LinearLayout(this);
         modes.setGravity(Gravity.CENTER);
@@ -346,26 +386,52 @@ public final class WatchActivity extends Activity {
         return false;
     }
 
-    private void changeMusicVolume(int direction) {
+    private void updateVolumeControls() {
+        if(audioManager==null||volumeLabel==null)return;
+        try {
+            int max=Math.max(1,audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            int value=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            boolean fixed=audioManager.isVolumeFixed();
+            volumeLabel.setText(fixed?"MEDIA VOLUME · controlled by output device":
+                "MEDIA VOLUME "+value+" / "+max);
+            if(volumeSlider!=null){
+                if(!volumeSliderActive){
+                    if(volumeSlider.getMax()!=max)volumeSlider.setMax(max);
+                    volumeSlider.setProgress(value);
+                }
+                volumeSlider.setEnabled(!fixed);
+            }
+        }catch(Exception e){volumeLabel.setText("MEDIA VOLUME · open Samsung Sound settings");}
+    }
+
+    private void applyMusicVolume(int value,boolean haptic) {
         if(audioManager==null)return;
         if(audioManager.isVolumeFixed()){
-            if(cosmic!=null)cosmic.showVolume("FIXED OUTPUT VOLUME");
+            if(cosmic!=null && cosmicMode)cosmic.showVolume("OUTPUT HAS FIXED VOLUME");
+            if(volumeLabel!=null)volumeLabel.setText("Volume controlled by speaker");
             return;
         }
-        int max=audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        int current=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        int next=Math.max(0,Math.min(max,current+(direction>0?1:-1)));
-        if(next==current)return;
         try{
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,next,0);
-            String status="VOLUME "+next+" / "+max;
-            if(cosmicMode&&cosmic!=null)cosmic.showVolume(status);
-            else android.widget.Toast.makeText(this,status,android.widget.Toast.LENGTH_SHORT).show();
-            View target=cosmicMode?cosmic:basePage;
-            if(target!=null)target.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
-        }catch(SecurityException ex){
-            if(cosmic!=null)cosmic.showVolume("USE WATCH VOLUME SETTINGS");
+            int max=audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            int safe=Math.max(0,Math.min(max,value));
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,safe,0);
+            updateVolumeControls();
+            int measured=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            String label="VOLUME "+measured+" / "+max;
+            if(cosmicMode&&cosmic!=null)cosmic.showVolume(label);
+            if(haptic){
+                View target=cosmicMode?cosmic:basePage;
+                if(target!=null)target.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+            }
+        }catch(Exception error){
+            if(volumeLabel!=null)volumeLabel.setText("Volume blocked · use Samsung media volume");
         }
+    }
+
+    private void changeMusicVolume(int direction) {
+        if(audioManager==null)return;
+        int current=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        applyMusicVolume(current+(direction>0?1:-1),true);
     }
 
     @Override public boolean dispatchTouchEvent(MotionEvent e) {
@@ -719,6 +785,7 @@ public final class WatchActivity extends Activity {
     private void updatePlaybackDisplay() {
         if(playButton==null)return;
         boolean active=player!=null && player.isPlaying();
+        updateVolumeControls();
         playButton.setText(active?"❚❚":"▶");
         shuffleButton.setText("🔀 "+(player!=null&&player.shuffleEnabled()?"ON":"OFF"));
         loopButton.setText("↻ "+(player!=null&&player.continuousEnabled()?"ON":"OFF"));

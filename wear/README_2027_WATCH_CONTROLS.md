@@ -31,3 +31,12 @@ The phone and watch apps use the same Android application ID and **must be insta
 - Test karaoke screen at 40/44 mm, timed-lyrics vs missing-LRC states, AOD/pause/battery, and 30-minute thermal use.
 - Test phone-to-watch MP3 and LRC transfers end-to-end with checksum and observable receipt. No success claims before receipt.
 - Ensure input audio master and original lyric source are preserved, no publisher metadata changes.
+
+## v0.4 proposed volume/accessibility update (requires new APK installation)
+
+- The main watch player always shows `VOL -` and `VOL +` buttons and a separate **Media volume slider**. One-finger input is supported. Values are clamped to the Android STREAM_MUSIC range and updated from system volume every refresh.
+- A **Samsung Sound / Media volume settings** shortcut opens the OS sound settings for Bluetooth routes where app-level control is ignored or output volume is fixed.
+- Two-finger horizontal gesture remains experimental, capped at five one-level changes per gesture. It is never the only way to control audio.
+- The watch app drawer has a recognizable PTIV icon and its full name **P.T. Architech Walkman**.
+- Upright screen rotation is **not** forced programmatically: on Galaxy Watch7 use Settings > General > Orientation > Wrist / Button position. Orientation is a device-wide setting, not a PTIV playback feature.
+- This is a source/build change, not yet validated on the user's remote watch. Signatures from different CI debug builds may differ; do not uninstall the existing watch app without verifying/preserving private lyrics and preferences. No originals changed.
