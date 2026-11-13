@@ -31,3 +31,11 @@ GitHub Actions → `Build PTIV Watch APK (test only)` → Run workflow. It build
 6. Record any codec/permission/background issue before declaring device acceptance.
 
 Original audio and verified lyrics remain unchanged. No Too Lost/Musixmatch publishing.
+
+## Bluetooth speakers/headphones
+
+Wear OS app includes a **Speaker / earbuds: pair Bluetooth** button, opening the system Bluetooth settings screen. The user initiates pairing there; the app never silently pairs, overrides system audio routing, or claims connection. Source phone files are not automatically transferred to watch. The Android phone/iPhone web app displays system pairing instructions in the Now Playing area.
+
+## PTIV description style
+
+Use neutral music-first descriptions: tempo/BPM, mood, instrumentation, language, production, genre, arrangement and rhythm. **Never insert names of other artists or bands** in marketing descriptions or app-generated blurbs. Preserve source filenames, original lyrics, masters and dated distributor metadata as-is; any cleaned display title must retain evidence of its original source.

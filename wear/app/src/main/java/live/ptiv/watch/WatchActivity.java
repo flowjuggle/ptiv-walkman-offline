@@ -11,6 +11,7 @@ import org.json.*;
 import android.net.Uri;
 import android.os.*;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.*;
 import android.widget.*;
 import java.io.*;
@@ -145,6 +146,10 @@ public final class WatchActivity extends Activity {
         modes.addView(shuffleButton,new LinearLayout.LayoutParams(0,dp(55),1));
         modes.addView(loopButton,new LinearLayout.LayoutParams(0,dp(55),1));
         root.addView(modes);
+
+        Button pairAudio = button("Speaker / earbuds: pair Bluetooth", v -> openBluetoothAudioSettings());
+        root.addView(pairAudio, new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
 
         TextView lyricHeader = label("LYRICS", 13, LIME);
         lyricHeader.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -367,6 +372,24 @@ public final class WatchActivity extends Activity {
         File folder=new File(getFilesDir(),"lyrics");
         if(!folder.exists())folder.mkdirs();
         return folder;
+    }
+
+    private void openBluetoothAudioSettings() {
+        // The OS, not this app, handles pairing, audio routing and authorization.
+        try {
+            startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+        } catch (Exception e) {
+            try {
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+                if (statusText != null) {
+                    statusText.setText("Open Connections / Bluetooth to pair speaker or headphones.");
+                }
+            } catch (Exception fallback) {
+                if (statusText != null) {
+                    statusText.setText("Open Watch Settings > Connections > Bluetooth manually.");
+                }
+            }
+        }
     }
 
     private void pickLrcFile() {
