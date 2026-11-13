@@ -6,6 +6,7 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.*;
+import android.media.AudioManager;
 import android.text.*;
 import org.json.*;
 import android.net.Uri;
@@ -42,12 +43,27 @@ public final class WatchActivity extends Activity {
         }
     }
     private CassetteView cassette;
+    private View basePage;
+    private FrameLayout cosmicRoot;
+    private CosmicView cosmic;
+    private boolean cosmicMode=false;
+    private AudioManager audioManager;
+    private boolean twoFingerActive=false;
+    private float twoFingerLastX=0f, twoFingerOriginY=0f;
+    private int volumeStepsThisGesture=0;
+    private long lastVolumeAt=0L;
+    private long singleTapAt=0L, tapStartedAt=0L;
+    private int tapSeriesCount=0;
+    private float tapSeriesX=0f,tapSeriesY=0f,tapDownX=0f,tapDownY=0f;
+    private boolean tapIsValid=false;
+    private static final int MAX_STEPS_PER_GESTURE=5;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ArrayList<LrcLine> timedLyrics = new ArrayList<>();
     private String lyricTrackKey = "";
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             updatePlaybackDisplay();
+            if(cosmicMode && cosmic!=null)cosmic.invalidate();
             handler.postDelayed(this, 750L);
         }
     };
@@ -97,6 +113,7 @@ public final class WatchActivity extends Activity {
     @Override public void onCreate(Bundle saved) {
         super.onCreate(saved);
         getWindow().setStatusBarColor(Color.rgb(10,24,27));
+        audioManager=(AudioManager)getSystemService(AUDIO_SERVICE);
         ScrollView scroller = new ScrollView(this);
         scroller.setFillViewport(true);
         scroller.setBackgroundColor(Color.rgb(9,18,22));
@@ -105,7 +122,8 @@ public final class WatchActivity extends Activity {
         root.setGravity(Gravity.CENTER_HORIZONTAL);
         root.setPadding(dp(15), dp(12), dp(15), dp(20));
         scroller.addView(root);
-        setContentView(scroller);
+        basePage=scroller;
+        setContentView(basePage);
 
         TextView brand = label("PTIV  WALKMAN", 20, LIME);
         brand.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -151,6 +169,12 @@ public final class WatchActivity extends Activity {
         Button pairAudio = button("Speaker / earbuds: pair Bluetooth", v -> openBluetoothAudioSettings());
         root.addView(pairAudio, new LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
+        Button cosmicButton=button("COSMIC KARAOKE (triple tap player)",v->toggleCosmic());
+        root.addView(cosmicButton,new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,dp(52)));
+        Button helpButton=button("? 30-second watch controls",v->showMiniTutorial());
+        root.addView(helpButton,new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,dp(47)));
 
         TextView lyricHeader = label("LYRICS", 13, LIME);
         lyricHeader.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -215,11 +239,13 @@ public final class WatchActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        if(cosmic!=null)cosmic.setScreenVisible(true);
         handler.removeCallbacks(tick);
         handler.post(tick);
     }
     @Override protected void onPause() {
         handler.removeCallbacks(tick);
+        if(cosmic!=null)cosmic.setScreenVisible(false);
         super.onPause();
     }
     @Override protected void onDestroy() {
@@ -228,6 +254,179 @@ public final class WatchActivity extends Activity {
             try { unbindService(connection); } catch (Exception ignored) { }
         }
         super.onDestroy();
+    }
+
+    private void showMiniTutorial() {
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("P.T. Architech • watch controls")
+            .setMessage(
+                "1. PLAY: tap the central button; next/previous are on either side.\n\n"+
+                "2. VOLUME: place TWO fingers on the screen together. Slide both RIGHT to increase, LEFT to decrease. Each small movement changes one level, never more than five per gesture. In Cosmic mode, use + / - if preferred.\n\n"+
+                "3. COSMIC KARAOKE: triple tap a quiet area of the player (not a button). Triple tap again to return. There's also a visible Cosmic button.\n\n"+
+                "4. LYRICS: import an approved .LRC. If none is available, Cosmic shows 'NO VERIFIED LRC YET' instead of guessing.\n\n"+
+                "5. SPEAKER: tap 'Speaker / earbuds' to open watch Bluetooth settings. The watch plays its own locally transferred P.T. Architech music.\n\n"+
+                "P.T. Architech only. Original lyrics and audio remain unchanged.")
+            .setPositiveButton("TRY COSMIC", (dialog,which)->toggleCosmic())
+            .setNegativeButton("CLOSE",null).show();
+    }
+
+    private void toggleCosmic() {
+        tapSeriesCount=0;
+        cosmicMode=!cosmicMode;
+        if(cosmicMode){
+            if(cosmicRoot==null){
+                cosmicRoot=new FrameLayout(this);
+                cosmicRoot.setBackgroundColor(Color.rgb(5,8,22));
+                cosmic=new CosmicView(this,new CosmicView.Source() {
+                    @Override public String title(){
+                        PlaybackService.Track t=player==null?null:player.currentTrack();
+                        return t==null?"Select PTIV song":t.title;
+                    }
+                    @Override public String lyric(){return karaokeLine(false);}
+                    @Override public String nextLyric(){return karaokeLine(true);}
+                    @Override public boolean hasTimedLyrics(){return !timedLyrics.isEmpty();}
+                    @Override public boolean isPlaying(){return player!=null&&player.isPlaying();}
+                    @Override public int positionMs(){return player==null?0:player.currentPosition();}
+                    @Override public int durationMs(){return player==null?0:player.currentDuration();}
+                });
+                cosmicRoot.addView(cosmic,new FrameLayout.LayoutParams(-1,-1));
+                // Explicit controls are a fallback when two fingers cannot be used.
+                Button back=button("BACK",v->toggleCosmic());back.setTextSize(11);
+                FrameLayout.LayoutParams backLp=new FrameLayout.LayoutParams(dp(72),dp(48),Gravity.TOP|Gravity.START);
+                backLp.setMargins(dp(8),dp(8),0,0);
+                cosmicRoot.addView(back,backLp);
+                Button minus=button("−",v->changeMusicVolume(-1));minus.setTextSize(22);
+                FrameLayout.LayoutParams leftLp=new FrameLayout.LayoutParams(dp(50),dp(52),Gravity.BOTTOM|Gravity.START);
+                leftLp.setMargins(dp(7),0,0,dp(8));cosmicRoot.addView(minus,leftLp);
+                Button plus=button("+",v->changeMusicVolume(1));plus.setTextSize(22);
+                FrameLayout.LayoutParams rightLp=new FrameLayout.LayoutParams(dp(50),dp(52),Gravity.BOTTOM|Gravity.END);
+                rightLp.setMargins(0,0,dp(7),dp(8));cosmicRoot.addView(plus,rightLp);
+            }
+            setContentView(cosmicRoot);
+            cosmic.setScreenVisible(true);
+            cosmic.invalidate();
+        }else{
+            if(cosmic!=null)cosmic.setScreenVisible(false);
+            setContentView(basePage);
+        }
+    }
+
+    private String karaokeLine(boolean next){
+        PlaybackService.Track t=player==null?null:player.currentTrack();
+        loadLyricsIfChanged(t);
+        if(timedLyrics.isEmpty())return "";
+        int i=-1,ms=player==null?0:player.currentPosition();
+        for(int k=0;k<timedLyrics.size();k++){
+            if(timedLyrics.get(k).millis<=ms)i=k;
+            else break;
+        }
+        int wanted=next?i+1:i;
+        if(wanted<0)return "♪";
+        if(wanted>=timedLyrics.size())return "♪";
+        return timedLyrics.get(wanted).text;
+    }
+
+    @Override public void onBackPressed(){
+        if(cosmicMode)toggleCosmic();
+        else super.onBackPressed();
+    }
+
+    private boolean tapOnInteractive(View view,float x,float y) {
+        if(view==null||!view.isShown())return false;
+        if(view instanceof Button || view instanceof EditText){
+            android.graphics.Rect r=new android.graphics.Rect();
+            return view.getGlobalVisibleRect(r)&&r.contains((int)x,(int)y);
+        }
+        if(view instanceof ViewGroup){
+            ViewGroup v=(ViewGroup)view;
+            for(int i=0;i<v.getChildCount();i++){
+                if(tapOnInteractive(v.getChildAt(i),x,y))return true;
+            }
+        }
+        return false;
+    }
+
+    private void changeMusicVolume(int direction) {
+        if(audioManager==null)return;
+        if(audioManager.isVolumeFixed()){
+            if(cosmic!=null)cosmic.showVolume("FIXED OUTPUT VOLUME");
+            return;
+        }
+        int max=audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int current=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int next=Math.max(0,Math.min(max,current+(direction>0?1:-1)));
+        if(next==current)return;
+        try{
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,next,0);
+            String status="VOLUME "+next+" / "+max;
+            if(cosmicMode&&cosmic!=null)cosmic.showVolume(status);
+            else android.widget.Toast.makeText(this,status,android.widget.Toast.LENGTH_SHORT).show();
+            View target=cosmicMode?cosmic:basePage;
+            if(target!=null)target.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+        }catch(SecurityException ex){
+            if(cosmic!=null)cosmic.showVolume("USE WATCH VOLUME SETTINGS");
+        }
+    }
+
+    @Override public boolean dispatchTouchEvent(MotionEvent e) {
+        int action=e.getActionMasked();
+        if(action==MotionEvent.ACTION_DOWN){
+            tapDownX=e.getRawX();tapDownY=e.getRawY();
+            tapStartedAt=android.os.SystemClock.uptimeMillis();
+            tapIsValid=true;
+            twoFingerActive=false;
+        } else if(action==MotionEvent.ACTION_POINTER_DOWN && e.getPointerCount()==2) {
+            twoFingerActive=true;tapIsValid=false;tapSeriesCount=0;
+            twoFingerLastX=(e.getX(0)+e.getX(1))/2f;
+            twoFingerOriginY=(e.getY(0)+e.getY(1))/2f;
+            volumeStepsThisGesture=0;lastVolumeAt=0L;
+            MotionEvent cancel=MotionEvent.obtain(e);
+            cancel.setAction(MotionEvent.ACTION_CANCEL);
+            super.dispatchTouchEvent(cancel);cancel.recycle();
+            return true;
+        } else if(twoFingerActive && action==MotionEvent.ACTION_MOVE) {
+            if(e.getPointerCount()>=2){
+                float centerX=(e.getX(0)+e.getX(1))/2f;
+                float centerY=(e.getY(0)+e.getY(1))/2f;
+                long now=android.os.SystemClock.uptimeMillis();
+                if(Math.abs(centerY-twoFingerOriginY)<=dp(72)){
+                    float delta=centerX-twoFingerLastX;
+                    if(Math.abs(delta)>=dp(29) &&
+                        volumeStepsThisGesture<MAX_STEPS_PER_GESTURE && now-lastVolumeAt>=75){
+                        changeMusicVolume(delta>0?1:-1);
+                        twoFingerLastX=centerX;
+                        volumeStepsThisGesture++;
+                        lastVolumeAt=now;
+                    }
+                }
+            }
+            return true;
+        } else if(twoFingerActive && (action==MotionEvent.ACTION_POINTER_UP ||
+                                     action==MotionEvent.ACTION_UP ||
+                                     action==MotionEvent.ACTION_CANCEL)){
+            if(action!=MotionEvent.ACTION_POINTER_UP)twoFingerActive=false;
+            tapIsValid=false;return true;
+        } else if(action==MotionEvent.ACTION_MOVE){
+            if(Math.hypot(e.getRawX()-tapDownX,e.getRawY()-tapDownY)>dp(20))
+                tapIsValid=false;
+        } else if(action==MotionEvent.ACTION_CANCEL){
+            tapIsValid=false;tapSeriesCount=0;
+        } else if(action==MotionEvent.ACTION_UP) {
+            long now=android.os.SystemClock.uptimeMillis();
+            boolean candidate=tapIsValid && now-tapStartedAt<280 &&
+                !tapOnInteractive(cosmicMode?cosmicRoot:basePage,e.getRawX(),e.getRawY());
+            boolean result=super.dispatchTouchEvent(e);
+            if(candidate){
+                if(now-singleTapAt<=400 &&
+                   Math.hypot(e.getRawX()-tapSeriesX,e.getRawY()-tapSeriesY)<dp(65)){
+                    tapSeriesCount++;
+                }else tapSeriesCount=1;
+                singleTapAt=now;tapSeriesX=e.getRawX();tapSeriesY=e.getRawY();
+                if(tapSeriesCount>=3){tapSeriesCount=0;toggleCosmic();return true;}
+            }else tapSeriesCount=0;
+            return result;
+        }
+        return super.dispatchTouchEvent(e);
     }
 
     private String requiredAudioPermission() {
