@@ -117,8 +117,15 @@ public final class CompanionActivity extends Activity implements DataClient.OnDa
             actions.setOrientation(LinearLayout.HORIZONTAL);
             Button audio=button("Send MP3/M4A",v->choose(row,false));
             Button lrc=button("Send LRC",v->choose(row,true));
-            actions.addView(audio,new LinearLayout.LayoutParams(0,52,1));
-            actions.addView(lrc,new LinearLayout.LayoutParams(0,52,1));
+            // LayoutParams heights are raw pixels, not dp. On high-density Galaxy phones
+            // 52 px collapses these buttons to unreadable strips. Use 56 dp touch targets.
+            final float density=getResources().getDisplayMetrics().density;
+            final int touchHeight=Math.round(56*density);
+            final int buttonGap=Math.round(6*density);
+            LinearLayout.LayoutParams audioSize=new LinearLayout.LayoutParams(0,touchHeight,1f);
+            audioSize.setMargins(0,0,buttonGap,0);
+            actions.addView(audio,audioSize);
+            actions.addView(lrc,new LinearLayout.LayoutParams(0,touchHeight,1f));
             list.addView(actions);
             View line=new View(this);line.setBackgroundColor(Color.rgb(47,67,62));
             list.addView(line,new LinearLayout.LayoutParams(-1,1));
