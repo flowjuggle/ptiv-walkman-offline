@@ -19,7 +19,11 @@ public final class PTIVShortcutComplication extends ComplicationDataSourceServic
     @Override
     public void onComplicationRequest(
             ComplicationRequest request, ComplicationRequestListener listener) {
-        listener.onComplicationData(data(request.getComplicationType()));
+        try {
+            listener.onComplicationData(data(request.getComplicationType()));
+        } catch (android.os.RemoteException error) {
+            android.util.Log.w("PTIVComplication", "Complication receiver unavailable", error);
+        }
     }
 
     @Override
