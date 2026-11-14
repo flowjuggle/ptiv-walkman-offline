@@ -1,0 +1,19 @@
+plugins { id 'com.android.application' }
+android {
+  namespace 'live.ptiv.shortcut'
+  compileSdk 35
+  defaultConfig {
+    applicationId 'live.ptiv.watch.shortcut'
+    minSdk 30
+    targetSdk 34
+    versionCode 1
+    versionName '0.1-shortcut-only'
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+dependencies {
+  implementation 'androidx.wear.watchface:watchface-complications-data-source:1.2.1'
+}

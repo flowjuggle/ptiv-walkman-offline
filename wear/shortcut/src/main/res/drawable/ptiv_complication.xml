@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="96" android:viewportHeight="96">
+    <!-- Monochrome pearl-in-triangle: the watch face owns its tint. -->
+    <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+        android:pathData="M48,4 L91,79 L5,79 Z M48,18 L16,73 L80,73 Z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M48,35 A16,16 0,1 1,48 67 A16,16 0,1 1,48 35"/>
+    <path android:fillColor="#00FFFFFF" android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2" android:pathData="M14,85 L82,85"/>
+</vector>

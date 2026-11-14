@@ -44,7 +44,7 @@ public final class WatchActivity extends Activity {
     }
     private CassetteView cassette;
     private SeekBar volumeSlider;
-    private TextView volumeLabel;
+    private TextView volumeLabel, pinnedVolumeLabel;
     private boolean volumeSliderActive=false;
     private View basePage;
     private FrameLayout cosmicRoot;
@@ -125,7 +125,35 @@ public final class WatchActivity extends Activity {
         root.setGravity(Gravity.CENTER_HORIZONTAL);
         root.setPadding(dp(15), dp(12), dp(15), dp(20));
         scroller.addView(root);
-        basePage=scroller;
+        FrameLayout mainRoot=new FrameLayout(this);
+        mainRoot.setBackgroundColor(Color.rgb(9,18,22));
+        scroller.setClipToPadding(false);
+        scroller.setPadding(0,0,0,dp(66));
+        mainRoot.addView(scroller,new FrameLayout.LayoutParams(-1,-1));
+        // Persistent one-tap controls, independent of scroll position.
+        LinearLayout volumeDock=new LinearLayout(this);
+        volumeDock.setOrientation(LinearLayout.HORIZONTAL);
+        volumeDock.setGravity(Gravity.CENTER);
+        android.graphics.drawable.GradientDrawable background =
+            new android.graphics.drawable.GradientDrawable();
+        background.setColor(Color.rgb(18,46,47));
+        background.setCornerRadius(dp(22));
+        background.setStroke(dp(1),Color.rgb(78,129,115));
+        volumeDock.setBackground(background);
+        Button dockMinus=button("-",v->changeMusicVolume(-1));
+        Button dockPlus=button("+",v->changeMusicVolume(1));
+        dockMinus.setTextSize(23); dockPlus.setTextSize(23);
+        dockMinus.setContentDescription("Decrease music volume");
+        dockPlus.setContentDescription("Increase music volume");
+        pinnedVolumeLabel=label("VOL",12,LIME);
+        volumeDock.addView(dockMinus,new LinearLayout.LayoutParams(dp(52),dp(47)));
+        volumeDock.addView(pinnedVolumeLabel,new LinearLayout.LayoutParams(0,dp(47),1));
+        volumeDock.addView(dockPlus,new LinearLayout.LayoutParams(dp(52),dp(47)));
+        FrameLayout.LayoutParams dockPosition=new FrameLayout.LayoutParams(
+            -1,dp(52),Gravity.BOTTOM);
+        dockPosition.setMargins(dp(8),0,dp(8),dp(7));
+        mainRoot.addView(volumeDock,dockPosition);
+        basePage=mainRoot;
         setContentView(basePage);
 
         TextView brand = label("PTIV  WALKMAN", 20, LIME);
@@ -394,6 +422,11 @@ public final class WatchActivity extends Activity {
             boolean fixed=audioManager.isVolumeFixed();
             volumeLabel.setText(fixed?"MEDIA VOLUME · controlled by output device":
                 "MEDIA VOLUME "+value+" / "+max);
+            if(pinnedVolumeLabel!=null){
+                pinnedVolumeLabel.setText(fixed?"OUTPUT":("VOL "+value+"/"+max));
+                pinnedVolumeLabel.setContentDescription(fixed?
+                    "Fixed media output":("Music volume "+value+" of "+max));
+            }
             if(volumeSlider!=null){
                 if(!volumeSliderActive){
                     if(volumeSlider.getMax()!=max)volumeSlider.setMax(max);

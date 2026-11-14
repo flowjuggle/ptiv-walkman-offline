@@ -28,7 +28,7 @@ jobs:
           gradle-version: '8.9'
       - name: Build debug APK
         working-directory: wear
-        run: gradle --no-daemon :app:assembleDebug :mobile:assembleDebug
+        run: gradle --no-daemon :app:assembleDebug :mobile:assembleDebug :shortcut:assembleDebug
       - name: Upload watch APK
         uses: actions/upload-artifact@v4
         with:
@@ -40,4 +40,11 @@ jobs:
         with:
           name: PTIV-Companion-Android-test-APK
           path: wear/mobile/build/outputs/apk/debug/mobile-debug.apk
+          if-no-files-found: error
+
+      - name: Upload independent PTIV watch-face shortcut APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-WatchFace-Shortcut-APK
+          path: wear/shortcut/build/outputs/apk/debug/shortcut-debug.apk
           if-no-files-found: error

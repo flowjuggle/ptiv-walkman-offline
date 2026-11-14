@@ -13,6 +13,20 @@
       <intent-filter><action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/></intent-filter>
     </activity>
+    <!-- Select "PTIV - Open Walkman" on any watch face with a compatible slot. -->
+    <service android:name=".PTIVShortcutComplication"
+             android:exported="true"
+             android:label="PTIV - Open Walkman"
+             android:icon="@drawable/ptiv_complication"
+             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+      <intent-filter>
+        <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST"/>
+      </intent-filter>
+      <meta-data android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                 android:value="SHORT_TEXT,ICON,LONG_TEXT"/>
+      <meta-data android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                 android:value="0"/>
+    </service>
     <service android:name=".PlaybackService" android:exported="false"
              android:foregroundServiceType="mediaPlayback"/>
     <service android:name=".CompanionReceiver"

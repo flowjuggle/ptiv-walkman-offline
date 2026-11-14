@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-feature android:name="android.hardware.type.watch" android:required="true"/>
+  <queries>
+    <package android:name="live.ptiv.watch"/>
+  </queries>
+  <application android:label="PTIV Quick Launch" android:icon="@drawable/ptiv_icon"
+               android:allowBackup="false"
+               android:theme="@android:style/Theme.Material.NoActionBar">
+    <activity android:name=".ShortcutActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <service android:name=".PTIVShortcutComplication"
+             android:exported="true"
+             android:label="PTIV — Open Walkman"
+             android:icon="@drawable/ptiv_complication"
+             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+      <intent-filter>
+        <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST"/>
+      </intent-filter>
+      <meta-data android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                 android:value="SHORT_TEXT,ICON,LONG_TEXT"/>
+      <meta-data android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                 android:value="0"/>
+    </service>
+  </application>
+</manifest>
