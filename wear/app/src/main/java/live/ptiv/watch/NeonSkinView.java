@@ -30,6 +30,7 @@ public final class NeonSkinView extends View {
         void lyrics();
         void shuffle();
         void secretTap();
+        void help();
     }
     private static final int CYAN=Color.rgb(26,231,243);
     private static final int ORANGE=Color.rgb(255,165,30);
@@ -201,7 +202,18 @@ public final class NeonSkinView extends View {
         if(e.getActionMasked()==MotionEvent.ACTION_UP) {
             float x=e.getX()*432f/Math.max(1,getWidth());
             float y=e.getY()*432f/Math.max(1,getHeight());
-            if(distance(x,y,touchX,touchY)>35)return true;
+            float distance=distance(x,y,touchX,touchY);
+            if(distance>35){
+                // The Neon face itself does not scroll; a swipe on blank space
+                // opens the real, scrollable, native song library. Transport
+                // controls and the Pearl keep their own hit regions.
+                if(PearlTriangleMath.actionAt(touchX,touchY)==0 &&
+                    Math.abs(y-touchY)>65 &&
+                    Math.abs(y-touchY)>1.3f*Math.abs(x-touchX)){
+                    if(y<touchY)actions.library();else actions.help();
+                }
+                return true;
+            }
             touchX=x;touchY=y;performClick();return true;
         }
         return e.getActionMasked()!=MotionEvent.ACTION_CANCEL;
