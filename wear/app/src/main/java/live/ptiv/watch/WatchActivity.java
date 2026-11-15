@@ -45,6 +45,7 @@ public final class WatchActivity extends Activity {
     private CassetteView cassette;
     private FrameLayout neonRoot;
     private NeonSkinView neonSkin;
+    private SecretTapGate secretTapGate;
     private ScrollView playerScroller;
     private boolean neonMode=true;
     private SeekBar volumeSlider;
@@ -315,6 +316,16 @@ public final class WatchActivity extends Activity {
         // foreground media service only after a user actually starts playback.
         bindService(new Intent(this,PlaybackService.class),connection,BIND_AUTO_CREATE);
         requestOrScanAudio();
+        secretTapGate=new SecretTapGate(handler,new SecretTapGate.Listener(){
+            @Override public void openPerformerMode(){
+                if(!isFinishing()&&neonMode&&!cosmicMode)
+                    new PerformerMode(WatchActivity.this,new ArrayList<>(songs),player).show();
+            }
+            @Override public void openServicesMode(){
+                if(!isFinishing()&&neonMode&&!cosmicMode)
+                    new ServicesMode(WatchActivity.this).show();
+            }
+        });
         prepareNeonSkin();
         showNeonSkin();
     }
@@ -360,6 +371,9 @@ public final class WatchActivity extends Activity {
             @Override public void shuffle(){
                 if(player!=null){player.setShuffle(!player.shuffleEnabled());updatePlaybackDisplay();}
             }
+            @Override public void secretTap(){
+                if(secretTapGate!=null)secretTapGate.tap();
+            }
         });
         neonRoot.addView(neonSkin,new FrameLayout.LayoutParams(-1,-1));
     }
@@ -391,11 +405,13 @@ public final class WatchActivity extends Activity {
     }
     @Override protected void onPause() {
         handler.removeCallbacks(tick);
+        if(secretTapGate!=null)secretTapGate.reset();
         if(cosmic!=null)cosmic.setScreenVisible(false);
         super.onPause();
     }
     @Override protected void onDestroy() {
         handler.removeCallbacks(tick);
+        if(secretTapGate!=null)secretTapGate.reset();
         if (connected) {
             try { unbindService(connection); } catch (Exception ignored) { }
         }
@@ -576,7 +592,12 @@ public final class WatchActivity extends Activity {
             tapIsValid=false;tapSeriesCount=0;
         } else if(action==MotionEvent.ACTION_UP) {
             long now=android.os.SystemClock.uptimeMillis();
-            boolean candidate=tapIsValid && now-tapStartedAt<280 &&
+            // The Pearl orb reserves its tap sequence for the 7- and 11-tap
+            // modes; ordinary three-tap Cosmic Karaoke keeps its old area.
+            boolean pearlOrb=neonMode&&!cosmicMode&&
+                Math.hypot(e.getRawX()-getWindow().getDecorView().getWidth()/2f,
+                    e.getRawY()-getWindow().getDecorView().getHeight()*79f/432f)<dp(25);
+            boolean candidate=tapIsValid && now-tapStartedAt<280 && !pearlOrb &&
                 !tapOnInteractive(cosmicMode?cosmicRoot:basePage,e.getRawX(),e.getRawY());
             boolean result=super.dispatchTouchEvent(e);
             if(candidate){
