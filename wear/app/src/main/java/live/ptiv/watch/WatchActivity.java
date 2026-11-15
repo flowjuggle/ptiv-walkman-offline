@@ -354,6 +354,16 @@ public final class WatchActivity extends Activity {
                 else{preservePlaybackOnExit();player.resume();}
                 updatePlaybackDisplay();
             }
+            @Override public void play(){
+                if(player!=null&&!player.isPlaying()){
+                    preservePlaybackOnExit();player.resume();updatePlaybackDisplay();
+                }
+            }
+            @Override public void pause(){
+                if(player!=null&&player.isPlaying()){
+                    player.pause();updatePlaybackDisplay();
+                }
+            }
             @Override public void next(){
                 if(player!=null){preservePlaybackOnExit();player.next();updatePlaybackDisplay();}
             }
