@@ -24,6 +24,7 @@ import java.text.Normalizer;
 public final class WatchActivity extends Activity {
     private static final int PERMISSION_MEDIA = 351;
     private static final int PICK_LRC = 352;
+    private static final int PEARL_SPEECH = PearlUiController.SPEECH_REQUEST;
     private static final int LIME = Color.rgb(195,247,113);
     private static final int MUTED = Color.rgb(180,202,193);
     private PlaybackService player;
@@ -46,6 +47,7 @@ public final class WatchActivity extends Activity {
     private FrameLayout neonRoot;
     private NeonSkinView neonSkin;
     private SecretTapGate secretTapGate;
+    private PearlUiController pearlUi;
     private ScrollView playerScroller;
     private boolean neonMode=true;
     private SeekBar volumeSlider;
@@ -326,6 +328,7 @@ public final class WatchActivity extends Activity {
                     new ServicesMode(WatchActivity.this).show();
             }
         });
+        preparePearlControls();
         prepareNeonSkin();
         showNeonSkin();
     }
@@ -338,6 +341,35 @@ public final class WatchActivity extends Activity {
         catch(IllegalStateException e){
             if(statusText!=null)statusText.setText("Watch background playback unavailable until the player is visible.");
         }
+    }
+
+
+    private void preparePearlControls(){
+        pearlUi=new PearlUiController(this,new PearlUiController.Controls(){
+            @Override public void library(){showLegacyLibrary();}
+            @Override public void help(){showMiniTutorial();}
+            @Override public void playPause(){
+                if(player==null)return;
+                if(player.isPlaying())player.pause();
+                else{preservePlaybackOnExit();player.resume();}
+                updatePlaybackDisplay();
+            }
+            @Override public void next(){
+                if(player!=null){preservePlaybackOnExit();player.next();updatePlaybackDisplay();}
+            }
+            @Override public void previous(){
+                if(player!=null){preservePlaybackOnExit();player.previous();updatePlaybackDisplay();}
+            }
+            @Override public void volume(int delta){changeMusicVolume(delta);}
+            @Override public void lyrics(){if(!cosmicMode)toggleCosmic();}
+            @Override public void performer(){
+                new PerformerMode(WatchActivity.this,new ArrayList<>(songs),player).show();
+            }
+            @Override public void services(){new ServicesMode(WatchActivity.this).show();}
+            @Override public void shuffle(){
+                if(player!=null){player.setShuffle(!player.shuffleEnabled());updatePlaybackDisplay();}
+            }
+        });
     }
 
     private void prepareNeonSkin() {
@@ -376,6 +408,30 @@ public final class WatchActivity extends Activity {
             }
         });
         neonRoot.addView(neonSkin,new FrameLayout.LayoutParams(-1,-1));
+        // All original Neon buttons remain beneath this transparent triangle-only
+        // overlay: it declines every DOWN outside the Pearl or helper Pearl.
+        PearlGestureOverlay pearlOverlay=new PearlGestureOverlay(this,new PearlGestureOverlay.Actions(){
+            @Override public void pearlTap(){
+                if(secretTapGate!=null)secretTapGate.tap();
+            }
+            @Override public void menuSide(int menuPage,int side){
+                if(pearlUi!=null)pearlUi.onSide(menuPage,side);
+            }
+            @Override public void orbitComplete(){
+                if(pearlUi!=null)pearlUi.onOrbit();
+            }
+            @Override public void inspectAt(float x,float y){
+                if(pearlUi!=null)pearlUi.inspect(x,y);
+            }
+            @Override public void requestVoice(){
+                if(pearlUi!=null)pearlUi.requestVoice();
+            }
+            @Override public void showHelp(){
+                if(pearlUi!=null)pearlUi.showHelp();
+            }
+            @Override public void openLibrary(){showLegacyLibrary();}
+        });
+        neonRoot.addView(pearlOverlay,new FrameLayout.LayoutParams(-1,-1));
     }
     private void showNeonSkin() {
         if(neonRoot==null)return;
@@ -597,7 +653,7 @@ public final class WatchActivity extends Activity {
             boolean pearlOrb=neonMode&&!cosmicMode&&
                 Math.hypot(e.getRawX()-getWindow().getDecorView().getWidth()/2f,
                     e.getRawY()-getWindow().getDecorView().getHeight()*79f/432f)<dp(25);
-            boolean candidate=tapIsValid && now-tapStartedAt<280 && !pearlOrb &&
+            boolean candidate=(!neonMode || cosmicMode) && tapIsValid && now-tapStartedAt<280 && !pearlOrb &&
                 !tapOnInteractive(cosmicMode?cosmicRoot:basePage,e.getRawX(),e.getRawY());
             boolean result=super.dispatchTouchEvent(e);
             if(candidate){
@@ -883,6 +939,10 @@ public final class WatchActivity extends Activity {
 
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
+        if(request==PEARL_SPEECH){
+            if(result==RESULT_OK && pearlUi!=null)pearlUi.onVoiceResult(data);
+            return;
+        }
         if (request!=PICK_LRC||result!=RESULT_OK||data==null||data.getData()==null)return;
         PlaybackService.Track track=player==null?null:player.currentTrack();
         if (track==null)return;
