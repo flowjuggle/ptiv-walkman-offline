@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WatchFace width="450" height="450">
+ <Scene>
+  <PartDraw x="0" y="0" width="450" height="450">
+   <Rectangle x="0" y="0" width="450" height="450"><Fill color="#080C14"/></Rectangle>
+   <Ellipse x="30" y="30" width="390" height="390"><Stroke color="#174F57" thickness="3"/></Ellipse>
+   <Ellipse x="46" y="46" width="358" height="358"><Stroke color="#174F57" thickness="1"/></Ellipse>
+   <Variant mode="AMBIENT" target="alpha" value="0"/>
+  </PartDraw>
+  <PartText x="75" y="47" width="300" height="42">
+   <Text align="CENTER"><Font family="SYNC_TO_DEVICE" size="25" weight="BOLD" color="#35D0C9">P.T. ARCHITECH</Font></Text>
+   <Variant mode="AMBIENT" target="alpha" value="0"/>
+  </PartText>
+  <DigitalClock x="55" y="110" width="340" height="118">
+   <TimeText x="0" y="0" width="340" height="118" align="CENTER" format="hh:mm">
+    <Font family="SYNC_TO_DEVICE" size="87" weight="BOLD" color="#EEF7EF"/>
+   </TimeText>
+  </DigitalClock>
+  <PartDraw x="110" y="249" width="230" height="116">
+   <RoundRectangle x="0" y="0" width="230" height="116" cornerRadiusX="45" cornerRadiusY="45"><Fill color="#12353C"/></RoundRectangle>
+   <Line startX="115" startY="15" endX="55" endY="96"><Stroke color="#35D0C9" thickness="6" cap="ROUND"/></Line>
+   <Line startX="55" startY="96" endX="175" endY="96"><Stroke color="#35D0C9" thickness="6" cap="ROUND"/></Line>
+   <Line startX="175" startY="96" endX="115" endY="15"><Stroke color="#35D0C9" thickness="6" cap="ROUND"/></Line>
+   <Launch target="live.ptiv.watch.neonpreview/live.ptiv.watch.WatchActivity"/>
+   <Variant mode="AMBIENT" target="alpha" value="0"/>
+  </PartDraw>
+  <PartText x="100" y="368" width="250" height="32">
+   <Text align="CENTER"><Font family="SYNC_TO_DEVICE" size="19" weight="BOLD" color="#35D0C9">OPEN NEON</Font></Text>
+   <Variant mode="AMBIENT" target="alpha" value="0"/>
+  </PartText>
+  <PartText x="110" y="407" width="230" height="24">
+   <Text align="CENTER"><Font family="SYNC_TO_DEVICE" size="16" color="#91A6A8">PEARL TRIANGLE</Font></Text>
+   <Variant mode="AMBIENT" target="alpha" value="0"/>
+  </PartText>
+ </Scene>
+</WatchFace>
