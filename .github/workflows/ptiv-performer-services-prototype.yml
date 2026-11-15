@@ -1,0 +1,32 @@
+name: PTIV 7-11 hidden modes compile and tests
+on:
+  push:
+    branches: [ feature/ptiv-seven-eleven-performer-services-20261114 ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare Android 35
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile hidden modes watch test APK
+        working-directory: wear
+        run: gradle --no-daemon :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-Watch-Performer-Services-Prototype
+          path: wear/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
