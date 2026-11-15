@@ -113,6 +113,32 @@ public final class WatchActivity extends Activity {
         return b;
     }
 
+    // Persistent +/- controls anchored to the watch's left/right screen edges.
+    // Kept outside the scrolling content so they remain available throughout the player.
+    private void addFixedSideVolumeButtons(FrameLayout surface) {
+        Button minus=button("−",v->changeMusicVolume(-1));
+        minus.setTextSize(24);
+        minus.setMinWidth(0);minus.setMinimumWidth(0);
+        minus.setMinHeight(0);minus.setMinimumHeight(0);
+        minus.setPadding(0,0,0,0);
+        minus.setContentDescription("Volume down one media step");
+        FrameLayout.LayoutParams left=new FrameLayout.LayoutParams(
+            dp(48),dp(58),Gravity.CENTER_VERTICAL|Gravity.START);
+        left.setMargins(dp(3),0,0,0);
+        surface.addView(minus,left);
+
+        Button plus=button("+",v->changeMusicVolume(1));
+        plus.setTextSize(24);
+        plus.setMinWidth(0);plus.setMinimumWidth(0);
+        plus.setMinHeight(0);plus.setMinimumHeight(0);
+        plus.setPadding(0,0,0,0);
+        plus.setContentDescription("Volume up one media step");
+        FrameLayout.LayoutParams right=new FrameLayout.LayoutParams(
+            dp(48),dp(58),Gravity.CENTER_VERTICAL|Gravity.END);
+        right.setMargins(0,0,dp(3),0);
+        surface.addView(plus,right);
+    }
+
     @Override public void onCreate(Bundle saved) {
         super.onCreate(saved);
         getWindow().setStatusBarColor(Color.rgb(10,24,27));
@@ -125,7 +151,10 @@ public final class WatchActivity extends Activity {
         root.setGravity(Gravity.CENTER_HORIZONTAL);
         root.setPadding(dp(15), dp(12), dp(15), dp(20));
         scroller.addView(root);
-        basePage=scroller;
+        FrameLayout playerFrame=new FrameLayout(this);
+        playerFrame.addView(scroller,new FrameLayout.LayoutParams(-1,-1));
+        addFixedSideVolumeButtons(playerFrame);
+        basePage=playerFrame;
         setContentView(basePage);
 
         TextView brand = label("PTIV  WALKMAN", 20, LIME);
@@ -330,17 +359,12 @@ public final class WatchActivity extends Activity {
                     @Override public int durationMs(){return player==null?0:player.currentDuration();}
                 });
                 cosmicRoot.addView(cosmic,new FrameLayout.LayoutParams(-1,-1));
-                // Explicit controls are a fallback when two fingers cannot be used.
+                // Same fixed left/right controls as the ordinary player.
+                addFixedSideVolumeButtons(cosmicRoot);
                 Button back=button("BACK",v->toggleCosmic());back.setTextSize(11);
                 FrameLayout.LayoutParams backLp=new FrameLayout.LayoutParams(dp(72),dp(48),Gravity.TOP|Gravity.START);
                 backLp.setMargins(dp(8),dp(8),0,0);
                 cosmicRoot.addView(back,backLp);
-                Button minus=button("−",v->changeMusicVolume(-1));minus.setTextSize(22);
-                FrameLayout.LayoutParams leftLp=new FrameLayout.LayoutParams(dp(50),dp(52),Gravity.BOTTOM|Gravity.START);
-                leftLp.setMargins(dp(7),0,0,dp(8));cosmicRoot.addView(minus,leftLp);
-                Button plus=button("+",v->changeMusicVolume(1));plus.setTextSize(22);
-                FrameLayout.LayoutParams rightLp=new FrameLayout.LayoutParams(dp(50),dp(52),Gravity.BOTTOM|Gravity.END);
-                rightLp.setMargins(0,0,dp(7),dp(8));cosmicRoot.addView(plus,rightLp);
             }
             setContentView(cosmicRoot);
             cosmic.setScreenVisible(true);
