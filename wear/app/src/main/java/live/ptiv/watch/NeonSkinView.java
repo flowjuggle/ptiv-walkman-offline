@@ -29,6 +29,7 @@ public final class NeonSkinView extends View {
         void library();
         void lyrics();
         void shuffle();
+        void secretTap();
     }
     private static final int CYAN=Color.rgb(26,231,243);
     private static final int ORANGE=Color.rgb(255,165,30);
@@ -208,6 +209,9 @@ public final class NeonSkinView extends View {
     @Override public boolean performClick(){
         super.performClick();
         float x=touchX,y=touchY;
+        // Seven taps = Performer; eleven = Services. The glowing Pearl logo
+        // is deliberately separate from the transport buttons.
+        if(distance(x,y,216,79)<34){actions.secretTap();return true;}
         if(y>=244&&y<283&&x>=67&&x<=364)actions.seek(Math.max(0,Math.min(1,(x-75)/282f)));
         else if(distance(x,y,52,318)<36)actions.volume(-1);
         else if(distance(x,y,380,318)<36)actions.volume(1);
