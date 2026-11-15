@@ -529,6 +529,7 @@ public final class WatchActivity extends Activity {
             MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.DURATION
         };
+        int rejected=0, matchedByFilename=0;
         try (Cursor cursor = getContentResolver().query(
             source, columns, null, null, MediaStore.Audio.Media.TITLE + " COLLATE NOCASE ASC")) {
             if (cursor != null) {
@@ -539,7 +540,7 @@ public final class WatchActivity extends Activity {
                 int pathColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.RELATIVE_PATH);
                 int filenameColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
                 int durColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
-                int rejected=0, matchedByFilename=0;
+
                 while (cursor.moveToNext() && songs.size()<2000) {
                     long duration=cursor.getLong(durColumn);
                     if (duration<3000L)continue;
