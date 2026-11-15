@@ -1,0 +1,44 @@
+name: PTIV Orb triangle controller isolated QA
+on:
+  push:
+    branches: [ feature/watch-orb-triangle-controller-20261115 ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  geometry-and-compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Test Pearl geometry without Android or the watch
+        run: |
+          mkdir -p /tmp/ptiv-orb-qa
+          javac -d /tmp/ptiv-orb-qa wear/app/src/main/java/live/ptiv/watch/PearlTriangleGeometry.java wear/qa/PearlTriangleGeometryTest.java
+          java -cp /tmp/ptiv-orb-qa live.ptiv.watch.PearlTriangleGeometryTest
+      - name: Verify isolated package and no microphone permission
+        run: |
+          grep -q "applicationId 'live.ptiv.watch.orbpreview'" wear/app/build.gradle
+          grep -q 'P.T. Architech Orb Test' wear/app/src/main/AndroidManifest.xml
+          if grep -q 'RECORD_AUDIO' wear/app/src/main/AndroidManifest.xml; then exit 3; fi
+          grep -q 'EXTRA_PREFER_OFFLINE,true' wear/app/src/main/java/live/ptiv/watch/PearlExperience.java
+      - name: Prepare Android SDK 35
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile independent Orb test APK only
+        working-directory: wear
+        run: gradle --no-daemon :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-Orb-Triangle-Standalone-Test-APK
+          path: wear/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
