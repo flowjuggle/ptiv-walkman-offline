@@ -309,7 +309,10 @@ public final class WatchActivity extends Activity {
         songList.setGravity(Gravity.CENTER_HORIZONTAL);
         root.addView(songList);
 
-        startService(new Intent(this,PlaybackService.class));
+        // Wear OS may start an activity while the screen is asleep. Starting a
+        // background service inside onCreate() would crash on Android 14+.
+        // BIND_AUTO_CREATE is safe here; PlaybackService promotes itself to a
+        // foreground media service only after a user actually starts playback.
         bindService(new Intent(this,PlaybackService.class),connection,BIND_AUTO_CREATE);
         requestOrScanAudio();
         prepareNeonSkin();
