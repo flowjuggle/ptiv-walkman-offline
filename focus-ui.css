@@ -1,0 +1,58 @@
+/* PTIV Walkman Focus UI — additive, no storage migration and no lyric changes */
+:root { --focus-glass: rgba(8,18,25,.83); }
+body.ptiv-focus-open { overflow:hidden; }
+main > h1 { font-size:clamp(25px,5.7vw,36px); margin:5px 0 4px; letter-spacing:-.035em; }
+main > .eyebrow { font-size:10px; }
+main > small, #deviceTip { font-size:11px; }
+.focus-actions { position:sticky; top:0; z-index:9; padding:9px 2px; display:flex; align-items:center; gap:8px; background:linear-gradient(180deg,#0b1719f9,#0b1719f0); backdrop-filter:blur(12px); border-bottom:1px solid #334d4a; }
+.focus-actions .btn { flex:1; padding:11px 12px; min-height:44px; font-size:13px; }
+.focus-player { margin:10px 0 12px; padding:12px 14px; }
+.focus-player .titleNow { font-size:19px; min-height:24px; margin:2px 0 7px; overflow-wrap:anywhere; }
+.focus-player .controls { margin:5px 0 9px; gap:8px; }
+.focus-player .controls .btn { border-radius:18px; padding:10px 13px; min-width:47px; min-height:45px; font-size:18px; }
+.focus-player .controls .btn.big { min-width:96px; }
+.focus-player .timing { font-size:11px; }
+.focus-player .mode-controls { margin-top:12px; }
+.focus-player > .hint { font-size:11px; }
+.focus-extra { margin:9px 0; border:1px solid #344e4d; border-radius:12px; background:#101e21; overflow:hidden; }
+.focus-extra > summary { padding:11px 14px; font-size:13px; font-weight:700; color:#d6ede4; cursor:pointer; list-style:auto; }
+.focus-extra > .panel, .focus-extra > .tape { margin:0; border:0; border-top:1px solid #344e4d; border-radius:0; }
+.focus-extra .btn { font-size:12px; padding:9px 11px; }
+.focus-mini { position:relative; width:100%; min-height:105px; display:block; border:1px solid #456a65; border-radius:14px; overflow:hidden; margin:8px 0; background:radial-gradient(circle at 20% 80%,#214e48,#071217 68%); color:#e6fff1; cursor:pointer; text-align:left; padding:0; }
+.focus-mini canvas { display:block; position:absolute; inset:0; width:100%; height:100%; opacity:.75; }
+.focus-mini .caption { position:absolute; left:15px; right:15px; top:12px; font-weight:750; font-size:14px; text-shadow:0 2px 8px #000; pointer-events:none; }
+.focus-mini .meta { position:absolute; left:15px; bottom:13px; font-size:12px; color:#d5edda; margin:0; pointer-events:none; }
+.focus-preview { margin:12px 0; border:1px solid #648579; border-radius:14px; padding:12px; background:#142327; }
+.focus-preview h3 { font-size:17px; margin:0 0 7px; }
+.focus-preview #scanSummary { font-size:12px; color:#cadbd8; line-height:1.5; }
+.focus-preview-list { max-height:320px; overflow:auto; margin:12px 0; border-top:1px solid #395552; }
+.focus-preview-item { padding:10px 2px; border-bottom:1px solid #395552; display:flex; gap:10px; align-items:start; font-size:13px; }
+.focus-preview-item input { margin-top:4px; width:20px; height:20px; accent-color:var(--lime); }
+.focus-preview-item span { display:block; color:#b4c9c3; font-size:11px; overflow-wrap:anywhere; }
+.focus-preview-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.focus-preview-actions button { flex:1; min-width:120px; min-height:44px; }
+.focus-overlay { position:fixed; inset:0; height:100vh; height:100dvh; z-index:999; background:#060d13; color:#fff; isolation:isolate; display:flex; flex-direction:column; padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+.focus-overlay.hidden { display:none!important; }
+.focus-overlay #focusCanvas { position:absolute; width:100%; height:100%; inset:0; opacity:.92; z-index:-2; }
+.focus-overlay:before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(#071117ed 0%,#0410178e 27%,#04101778 60%,#061019f0 100%); pointer-events:none; }
+.focus-overlay-header { padding:13px 17px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.focus-overlay-title { font-size:12px; letter-spacing:.15em; font-weight:800; color:#d4ffb9; }
+.focus-overlay-sub { color:#ccdfd7; font-size:12px; margin-top:3px; max-width:70vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.focus-iconbutton { border:1px solid #597b72; border-radius:13px; background:var(--focus-glass); color:white; font-size:17px; min-width:44px; min-height:44px; cursor:pointer; }
+.focus-overlay-center { flex:1; min-height:0; display:flex; flex-direction:column; align-items:stretch; padding:6px 16px; }
+.focus-lyric-status { flex:none; text-align:center; margin:4px auto 7px; padding:5px 10px; font-size:10px; color:#f3d3aa; background:#12262add; border:1px solid #54675e; border-radius:20px; max-width:94%; }
+.focus-lyrics { flex:1; min-height:0; overflow:auto; scroll-behavior:smooth; text-align:center; padding:15vh 5px 20vh; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+.focus-lyrics .focus-line { font-size:var(--lyric-font,20px); line-height:1.5; color:#cfddda; margin:0 auto 15px; padding:9px 9px; border-radius:11px; max-width:680px; text-shadow:0 1px 9px #000; overflow-wrap:anywhere; white-space:pre-wrap; }
+.focus-lyrics .focus-line.active { color:#f1ffc7; font-weight:850; background:#2d5135ae; }
+.focus-lyrics .focus-line.dim { opacity:.86; }
+.focus-lyrics .focus-message { font-size:16px; color:#d5e4e4; padding:30px 15px; }
+.focus-overlay-footer { padding:9px 16px 13px; background:linear-gradient(0deg,#08171ce8,#08171c77); }
+.focus-overlay-footer .focus-transport { display:flex; justify-content:center; gap:15px; align-items:center; margin:11px 0; }
+.focus-transport .focus-iconbutton { min-width:55px; min-height:50px; border-radius:20px; font-size:23px; }
+.focus-transport .focus-play { min-width:85px; background:#c3f771; color:#122518; font-weight:800; }
+.focus-overlay-footer input[type=range] { width:100%; accent-color:#c3f771; }
+.focus-footer-tools { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:9px; margin:7px 0; }
+.focus-footer-tools .focus-iconbutton { font-size:12px; padding:0 9px; min-width:47px; }
+.focus-footer-tools select { background:#142a2d; border:1px solid #557c74; color:#fff; border-radius:11px; padding:12px; min-height:44px; font-size:12px; }
+@media(max-width:420px) { .focus-actions .btn { font-size:12px; padding:9px 6px; } .focus-lyrics { padding-top:11vh; } .focus-overlay-footer { padding-bottom:11px; } }
+@media(prefers-reduced-motion:reduce) { .focus-lyrics { scroll-behavior:auto; } }
