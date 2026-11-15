@@ -526,6 +526,7 @@ public final class WatchActivity extends Activity {
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.RELATIVE_PATH,
+            MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.DURATION
         };
         try (Cursor cursor = getContentResolver().query(
@@ -536,8 +537,9 @@ public final class WatchActivity extends Activity {
                 int albumColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM);
                 int artistColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST);
                 int pathColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.RELATIVE_PATH);
+                int filenameColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
                 int durColumn=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
-                int rejected=0;
+                int rejected=0, matchedByFilename=0;
                 while (cursor.moveToNext() && songs.size()<2000) {
                     long duration=cursor.getLong(durColumn);
                     if (duration<3000L)continue;
@@ -545,9 +547,17 @@ public final class WatchActivity extends Activity {
                     String album=cursor.getString(albumColumn);
                     String artist=cursor.getString(artistColumn);
                     String path=cursor.getString(pathColumn);
+                    String filename=cursor.getString(filenameColumn);
                     // Fail closed: PTIV provenance AND exact catalog title. Never play arbitrary watch MP3s.
                     if (!explicitPTIVSource(artist,path)) { rejected++; continue; }
                     CatalogRow approved=authorizedCatalogMatch(title,album);
+                    // Some user-owned PTIV MP3s have generic or legacy embedded TITLE tags.
+                    // Only trust the filename fallback for the dedicated PTIV folder, and
+                    // only when it unambiguously matches a title from the unchanged catalog.
+                    if (approved==null && inPTIVFolder(path)) {
+                        approved=authorizedPTIVFilenameMatch(filename,album);
+                        if (approved!=null) matchedByFilename++;
+                    }
                     if (approved==null) { rejected++; continue; }
                     long id=cursor.getLong(idColumn);
                     Uri uri=ContentUris.withAppendedId(source,id);
@@ -558,7 +568,8 @@ public final class WatchActivity extends Activity {
                 }
             }
             if (player!=null)player.setQueue(songs);
-            libraryText.setText(songs.size()+" P.T. Architech tracks ready on watch");
+            libraryText.setText(songs.size()+" P.T. Architech tracks ready on watch ("+
+                matchedByFilename+" verified by PTIV filename; "+rejected+" excluded)");
             statusText.setText(songs.isEmpty() ?
                 "No authorized PTIV audio on watch. Transfer a catalog-matching MP3/M4A to Music/PTIV/, then rescan. Unrelated MP3s are excluded." :
                 "P.T. Architech only: "+songs.size()+" local tracks. Unrelated files are excluded. Playback works offline.");
@@ -591,6 +602,21 @@ public final class WatchActivity extends Activity {
         }
         // A reused title across releases needs a real album match; don't guess.
         return count==1?candidate:null;
+    }
+    private static boolean inPTIVFolder(String relativePath) {
+        return relativePath!=null && relativePath.replace('\\','/').toLowerCase(Locale.ROOT).startsWith("music/ptiv/");
+    }
+    private CatalogRow authorizedPTIVFilenameMatch(String displayName,String album) {
+        if(displayName==null||displayName.trim().isEmpty())return null;
+        // Only invoked after inPTIVFolder() and exact-catalog lookup fail.
+        // No broad substring/fuzzy matching; ambiguous release titles remain blocked.
+        String base=displayName.trim().replaceFirst("(?i)\\.(mp3|m4a|flac|wav|ogg|opus)$","")
+            .replace('_',' ');
+        CatalogRow exact=authorizedCatalogMatch(base,album);
+        if(exact!=null)return exact;
+        String withoutVersion=base.replaceFirst("(?i)\\s+(remastered|mastered)$","");
+        if(withoutVersion.equals(base))return null;
+        return authorizedCatalogMatch(withoutVersion,album);
     }
     private boolean explicitPTIVSource(String artist,String relativePath){
         if("ptarchitech".equals(key(artist)))return true;
