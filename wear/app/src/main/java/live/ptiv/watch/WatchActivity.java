@@ -182,13 +182,13 @@ public final class WatchActivity extends Activity {
         LinearLayout transport = new LinearLayout(this);
         transport.setGravity(Gravity.CENTER);
         transport.setOrientation(LinearLayout.HORIZONTAL);
-        Button previous = button("◀◀", v->{ if (player != null) { player.previous(); updatePlaybackDisplay(); } });
+        Button previous = button("◀◀", v->{ if (player != null) { preservePlaybackOnExit();player.previous(); updatePlaybackDisplay(); } });
         playButton = button("▶", v->{
             if (player == null) return;
-            if (player.isPlaying()) player.pause(); else player.resume();
+            if (player.isPlaying()) player.pause(); else {preservePlaybackOnExit();player.resume();}
             updatePlaybackDisplay();
         });
-        Button next = button("▶▶", v->{ if (player != null) { player.next(); updatePlaybackDisplay(); } });
+        Button next = button("▶▶", v->{ if (player != null) { preservePlaybackOnExit();player.next(); updatePlaybackDisplay(); } });
         for (Button b : new Button[]{previous,playButton,next}) {
             transport.addView(b,new LinearLayout.LayoutParams(0,dp(60),1));
         }
@@ -319,6 +319,16 @@ public final class WatchActivity extends Activity {
         showNeonSkin();
     }
 
+    private void preservePlaybackOnExit() {
+        // Call only from an explicit visible playback action, never at cold start
+        // while Wear OS may be asleep. The started service is promoted to the
+        // foreground by PlaybackService after a valid local track begins playing.
+        try {startService(new Intent(this, PlaybackService.class));}
+        catch(IllegalStateException e){
+            if(statusText!=null)statusText.setText("Watch background playback unavailable until the player is visible.");
+        }
+    }
+
     private void prepareNeonSkin() {
         neonRoot=new FrameLayout(this);
         neonRoot.setBackgroundColor(Color.rgb(5,11,24));
@@ -335,11 +345,11 @@ public final class WatchActivity extends Activity {
             @Override public boolean lyricsAvailable(){return !timedLyrics.isEmpty();}
         },new NeonSkinView.Actions() {
             @Override public void volume(int direction){changeMusicVolume(direction);}
-            @Override public void previous(){if(player!=null){player.previous();updatePlaybackDisplay();}}
+            @Override public void previous(){if(player!=null){preservePlaybackOnExit();player.previous();updatePlaybackDisplay();}}
             @Override public void playPause(){
-                if(player!=null){if(player.isPlaying())player.pause();else player.resume();updatePlaybackDisplay();}
+                if(player!=null){if(player.isPlaying())player.pause();else{preservePlaybackOnExit();player.resume();}updatePlaybackDisplay();}
             }
-            @Override public void next(){if(player!=null){player.next();updatePlaybackDisplay();}}
+            @Override public void next(){if(player!=null){preservePlaybackOnExit();player.next();updatePlaybackDisplay();}}
             @Override public void seek(float f){
                 if(player!=null&&player.currentDuration()>0){
                     player.seekTo(Math.round(f*player.currentDuration()));updatePlaybackDisplay();
@@ -763,12 +773,13 @@ public final class WatchActivity extends Activity {
                     return;
                 }
                 player.setQueue(songs);
+                preservePlaybackOnExit();
                 player.playIndex(target);
                 lyricTrackKey="";
                 updatePlaybackDisplay();
                 if(!player.isPlaying() && !player.getLastError().isEmpty()){
                     statusText.setText("PLAYBACK FAILED: "+player.getLastError());
-                }
+                } else if(player.isPlaying())showNeonSkin();
             });
             b.setTextSize(11);
             b.setAlpha(target>=0?1f:.66f);
@@ -791,9 +802,11 @@ public final class WatchActivity extends Activity {
             Button b=button((i+1)+". "+item.title,v->{
                 if (player==null){statusText.setText("Player connecting. Tap again in a moment.");return;}
                 player.setQueue(songs);
+                preservePlaybackOnExit();
                 player.playIndex(index);
                 lyricTrackKey="";
                 updatePlaybackDisplay();
+                if(player.isPlaying())showNeonSkin();
             });
             b.setTextSize(12);
             songList.addView(b,new LinearLayout.LayoutParams(
