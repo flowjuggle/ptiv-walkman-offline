@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp" android:height="96dp"
+    android:viewportWidth="96" android:viewportHeight="96">
+    <!-- Deep navy round icon, bright electric pearl and gold triangle. -->
+    <path android:fillColor="#050B18"
+          android:pathData="M48,3 A45,45 0,1 0,48,93 A45,45 0,1 0,48,3 Z"/>
+    <path android:fillColor="#152B3D"
+          android:pathData="M15,59 L81,59 L81,81 L15,81 Z"/>
+    <path android:fillColor="#0B2136"
+          android:pathData="M18,81 L18,56 L23,56 L23,81 Z M29,81 L29,51 L36,51 L36,81 Z M60,81 L60,49 L67,49 L67,81 Z M72,81 L72,59 L78,59 L78,81 Z"/>
+    <path android:fillColor="#00000000" android:strokeColor="#FFAD28"
+          android:strokeWidth="6" android:strokeLineCap="round"
+          android:strokeLineJoin="round"
+          android:pathData="M48,12 L18,70 L78,70 Z"/>
+    <path android:fillColor="#F8FCFE"
+          android:pathData="M48,34 A16,16 0,1 0,48,66 A16,16 0,1 0,48,34 Z"/>
+    <path android:fillColor="#25DDEC"
+          android:pathData="M48,38 A12,12 0,1 0,48,62 A12,12 0,1 0,48,38 Z"/>
+    <path android:fillColor="#9F66E5"
+          android:pathData="M56,43 A8,8 0,0 1,55,58 A12,12 0,0 0,56,43 Z"/>
+    <path android:fillColor="#FFFFFF"
+          android:pathData="M43,40 A4,4 0,1 0,43,48 A4,4 0,1 0,43,40 Z"/>
+</vector>
