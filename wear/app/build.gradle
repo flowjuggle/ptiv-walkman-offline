@@ -4,11 +4,11 @@ android {
   namespace 'live.ptiv.watch'
   compileSdk 35
   defaultConfig {
-    applicationId 'live.ptiv.watch.neonpreview'
+    applicationId 'live.ptiv.watch.pearluxpreview'
     minSdk 30
     targetSdk 34
     versionCode 1
-    versionName '0.2-neon-safe-preview'
+    versionName '0.3-pearl-ux-prototype'
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_17
@@ -22,4 +22,8 @@ tasks.register('syncPTIVCatalog', Copy) {
 }
 tasks.named('preBuild').configure { dependsOn 'syncPTIVCatalog' }
 
-dependencies { implementation 'com.google.android.gms:play-services-wearable:20.0.1' }
+dependencies {
+ implementation 'com.google.android.gms:play-services-wearable:20.0.1'
+ testImplementation 'junit:junit:4.13.2'
+}
+
