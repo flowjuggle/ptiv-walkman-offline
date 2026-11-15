@@ -46,6 +46,7 @@ public final class WatchActivity extends Activity {
     private FrameLayout neonRoot;
     private NeonSkinView neonSkin;
     private SecretTapGate secretTapGate;
+    private PearlExperience pearlExperience;
     private ScrollView playerScroller;
     private boolean neonMode=true;
     private SeekBar volumeSlider;
@@ -326,6 +327,14 @@ public final class WatchActivity extends Activity {
                     new ServicesMode(WatchActivity.this).show();
             }
         });
+        pearlExperience=new PearlExperience(this,new PearlExperience.Controls(){
+            @Override public void invoke(String action){invokePearlControl(action);}
+            @Override public String trackTitle(){
+                PlaybackService.Track t=player==null?null:player.currentTrack();
+                return t==null?"None selected":t.title;
+            }
+            @Override public int trackCount(){return songs.size();}
+        });
         prepareNeonSkin();
         showNeonSkin();
     }
@@ -374,6 +383,18 @@ public final class WatchActivity extends Activity {
             @Override public void secretTap(){
                 if(secretTapGate!=null)secretTapGate.tap();
             }
+            @Override public void triangleSide(int side,boolean advanced){
+                if(pearlExperience!=null)pearlExperience.side(side,advanced);
+            }
+            @Override public void companionUnlocked(){
+                if(pearlExperience!=null)pearlExperience.orbitUnlocked();
+            }
+            @Override public void inspectTarget(String target){
+                if(pearlExperience!=null)pearlExperience.inspect(target);
+            }
+            @Override public void voiceInteraction(){
+                if(pearlExperience!=null)pearlExperience.voice();
+            }
         });
         neonRoot.addView(neonSkin,new FrameLayout.LayoutParams(-1,-1));
     }
@@ -416,6 +437,40 @@ public final class WatchActivity extends Activity {
             try { unbindService(connection); } catch (Exception ignored) { }
         }
         super.onDestroy();
+    }
+
+    /** Explicitly whitelisted actions from the optional Pearl interface. */
+    private void invokePearlControl(String action) {
+        switch(action){
+            case "library":showLegacyLibrary();break;
+            case "lyrics":if(!cosmicMode)toggleCosmic();break;
+            case "play":
+                if(player!=null){
+                    if(player.isPlaying())player.pause();
+                    else{preservePlaybackOnExit();player.resume();}
+                }
+                break;
+            case "resume":
+                if(player!=null){preservePlaybackOnExit();player.resume();}
+                break;
+            case "pause":if(player!=null)player.pause();break;
+            case "previous":
+                if(player!=null){preservePlaybackOnExit();player.previous();}
+                break;
+            case "next":
+                if(player!=null){preservePlaybackOnExit();player.next();}
+                break;
+            case "shuffle":
+                if(player!=null)player.setShuffle(!player.shuffleEnabled());
+                break;
+            case "volume-down":changeMusicVolume(-1);break;
+            case "volume-up":changeMusicVolume(1);break;
+            case "performer":
+                new PerformerMode(this,new ArrayList<>(songs),player).show();break;
+            case "services":new ServicesMode(this).show();break;
+            default:return;
+        }
+        updatePlaybackDisplay();
     }
 
     private void showMiniTutorial() {
@@ -597,7 +652,9 @@ public final class WatchActivity extends Activity {
             boolean pearlOrb=neonMode&&!cosmicMode&&
                 Math.hypot(e.getRawX()-getWindow().getDecorView().getWidth()/2f,
                     e.getRawY()-getWindow().getDecorView().getHeight()*79f/432f)<dp(25);
-            boolean candidate=tapIsValid && now-tapStartedAt<280 && !pearlOrb &&
+            // On Neon, only the new Pearl controller handles tap sequences.
+            // Leave triple-tap Cosmic recognition to the legacy/Cosmic views.
+            boolean candidate=(cosmicMode || !neonMode) && tapIsValid && now-tapStartedAt<280 && !pearlOrb &&
                 !tapOnInteractive(cosmicMode?cosmicRoot:basePage,e.getRawX(),e.getRawY());
             boolean result=super.dispatchTouchEvent(e);
             if(candidate){
@@ -883,6 +940,10 @@ public final class WatchActivity extends Activity {
 
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
+        if(request==PearlExperience.VOICE_REQUEST){
+            if(pearlExperience!=null)pearlExperience.voiceResult(result,data);
+            return;
+        }
         if (request!=PICK_LRC||result!=RESULT_OK||data==null||data.getData()==null)return;
         PlaybackService.Track track=player==null?null:player.currentTrack();
         if (track==null)return;
