@@ -43,6 +43,10 @@ public final class WatchActivity extends Activity {
         }
     }
     private CassetteView cassette;
+    private FrameLayout neonRoot;
+    private NeonSkinView neonSkin;
+    private ScrollView playerScroller;
+    private boolean neonMode=true;
     private SeekBar volumeSlider;
     private TextView volumeLabel;
     private boolean volumeSliderActive=false;
@@ -66,6 +70,7 @@ public final class WatchActivity extends Activity {
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             updatePlaybackDisplay();
+            if(neonMode && neonSkin!=null)neonSkin.invalidate();
             if(cosmicMode && cosmic!=null)cosmic.invalidate();
             handler.postDelayed(this, 750L);
         }
@@ -151,6 +156,7 @@ public final class WatchActivity extends Activity {
         root.setGravity(Gravity.CENTER_HORIZONTAL);
         root.setPadding(dp(15), dp(12), dp(15), dp(20));
         scroller.addView(root);
+        playerScroller=scroller;
         FrameLayout playerFrame=new FrameLayout(this);
         playerFrame.addView(scroller,new FrameLayout.LayoutParams(-1,-1));
         addFixedSideVolumeButtons(playerFrame);
@@ -160,6 +166,8 @@ public final class WatchActivity extends Activity {
         TextView brand = label("PTIV  WALKMAN", 20, LIME);
         brand.setTypeface(null, android.graphics.Typeface.BOLD);
         root.addView(brand);
+        Button returnNeon=button("✦ P.T. ARCHITECH NEON SKIN",v->showNeonSkin());
+        root.addView(returnNeon,new LinearLayout.LayoutParams(-1,dp(52)));
 
         cassette = new CassetteView(this);
         root.addView(cassette, new LinearLayout.LayoutParams(
@@ -304,6 +312,62 @@ public final class WatchActivity extends Activity {
         startService(new Intent(this,PlaybackService.class));
         bindService(new Intent(this,PlaybackService.class),connection,BIND_AUTO_CREATE);
         requestOrScanAudio();
+        prepareNeonSkin();
+        showNeonSkin();
+    }
+
+    private void prepareNeonSkin() {
+        neonRoot=new FrameLayout(this);
+        neonRoot.setBackgroundColor(Color.rgb(5,11,24));
+        neonSkin=new NeonSkinView(this,new NeonSkinView.State() {
+            @Override public String title() {
+                PlaybackService.Track t=player==null?null:player.currentTrack();
+                return t==null?"SELECT A PTIV TRACK":t.title;
+            }
+            @Override public int positionMs(){return player==null?0:player.currentPosition();}
+            @Override public int durationMs(){return player==null?0:player.currentDuration();}
+            @Override public int trackCount(){return songs.size();}
+            @Override public boolean playing(){return player!=null&&player.isPlaying();}
+            @Override public boolean shuffle(){return player!=null&&player.shuffleEnabled();}
+            @Override public boolean lyricsAvailable(){return !timedLyrics.isEmpty();}
+        },new NeonSkinView.Actions() {
+            @Override public void volume(int direction){changeMusicVolume(direction);}
+            @Override public void previous(){if(player!=null){player.previous();updatePlaybackDisplay();}}
+            @Override public void playPause(){
+                if(player!=null){if(player.isPlaying())player.pause();else player.resume();updatePlaybackDisplay();}
+            }
+            @Override public void next(){if(player!=null){player.next();updatePlaybackDisplay();}}
+            @Override public void seek(float f){
+                if(player!=null&&player.currentDuration()>0){
+                    player.seekTo(Math.round(f*player.currentDuration()));updatePlaybackDisplay();
+                }
+            }
+            @Override public void library(){showLegacyLibrary();}
+            @Override public void lyrics(){if(!cosmicMode)toggleCosmic();}
+            @Override public void shuffle(){
+                if(player!=null){player.setShuffle(!player.shuffleEnabled());updatePlaybackDisplay();}
+            }
+        });
+        neonRoot.addView(neonSkin,new FrameLayout.LayoutParams(-1,-1));
+    }
+    private void showNeonSkin() {
+        if(neonRoot==null)return;
+        if(cosmicMode)cosmicMode=false;
+        neonMode=true;
+        setContentView(neonRoot);
+        neonSkin.invalidate();
+    }
+    private void showLegacyLibrary() {
+        if(cosmicMode)cosmicMode=false;
+        neonMode=false;
+        setContentView(basePage);
+        if(playerScroller!=null&&songList!=null)playerScroller.post(()->playerScroller.smoothScrollTo(0,songList.getTop()));
+    }
+
+    @Override public void onBackPressed() {
+        if(cosmicMode){toggleCosmic();return;}
+        if(!neonMode){showNeonSkin();return;}
+        super.onBackPressed();
     }
 
     @Override protected void onResume() {
@@ -371,7 +435,8 @@ public final class WatchActivity extends Activity {
             cosmic.invalidate();
         }else{
             if(cosmic!=null)cosmic.setScreenVisible(false);
-            setContentView(basePage);
+            setContentView(neonMode&&neonRoot!=null?neonRoot:basePage);
+            if(neonMode&&neonSkin!=null)neonSkin.invalidate();
         }
     }
 
