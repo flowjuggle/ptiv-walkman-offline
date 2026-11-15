@@ -455,11 +455,6 @@ public final class WatchActivity extends Activity {
         return timedLyrics.get(wanted).text;
     }
 
-    @Override public void onBackPressed(){
-        if(cosmicMode)toggleCosmic();
-        else super.onBackPressed();
-    }
-
     private boolean tapOnInteractive(View view,float x,float y) {
         if(view==null||!view.isShown())return false;
         if(view instanceof Button || view instanceof EditText){
