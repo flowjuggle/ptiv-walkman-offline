@@ -53,7 +53,7 @@ public final class NeonSkinView extends View {
     private boolean alternateMenu=false,companionUnlocked=false,holdTriggered=false,dragging=false;
     private boolean voiceAlreadyOpened=false;
     private int pearlPointer=0;
-    private float downX,downY,pearlX=216f,pearlY=79f,companionX=300f,companionY=85f;
+    private float downX,downY,pearlX=216f,pearlY=79f,companionX=247f,companionY=96f;
     private final Runnable longHold=()->{
         if(pearlPointer==1 && !dragging){
             holdTriggered=true;
@@ -74,7 +74,7 @@ public final class NeonSkinView extends View {
         setLayerType(View.LAYER_TYPE_SOFTWARE,null);
         setClickable(true);
         setFocusable(true);
-        setContentDescription("P.T. Architech Neon Walkman. Left minus and right plus control media volume. Center playback, previous, next, library, lyrics and shuffle.");
+        setContentDescription("P.T. Architech Orb Test. The center Pearl drags to three triangle sides for menus, holds ten seconds to switch menu colors, and traces one complete triangle orbit to reveal a second draggable Pearl. Bringing the small Pearl back inside the triangle opens optional voice. Left minus, right plus, center playback, previous, next, library, lyrics and shuffle.");
     }
     private void fill(int color) {p.reset();p.setAntiAlias(true);p.setStyle(Paint.Style.FILL);p.setColor(color);}
     private void stroke(int color,float width) {
