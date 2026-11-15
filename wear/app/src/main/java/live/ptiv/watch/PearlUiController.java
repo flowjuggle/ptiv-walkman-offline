@@ -16,6 +16,8 @@ final class PearlUiController {
         void library();
         void help();
         void playPause();
+        void play();
+        void pause();
         void next();
         void previous();
         void volume(int delta);
@@ -148,8 +150,8 @@ final class PearlUiController {
         else if(words.contains("volume down")||words.contains("quieter"))controls.volume(-1);
         else if(words.contains("previous")||words.contains("back track"))controls.previous();
         else if(words.contains("next"))controls.next();
-        else if(words.contains("pause")||words.contains("stop music"))controls.playPause();
-        else if(words.equals("play")||words.contains("play music"))controls.playPause();
+        else if(words.contains("pause")||words.contains("stop music"))controls.pause();
+        else if(words.equals("play")||words.contains("play music"))controls.play();
         else if(words.contains("song")||words.contains("library"))controls.library();
         else if(words.contains("lyric"))controls.lyrics();
         else if(words.contains("shuffle"))controls.shuffle();
