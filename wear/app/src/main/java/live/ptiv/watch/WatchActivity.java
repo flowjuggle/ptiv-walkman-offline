@@ -416,6 +416,9 @@ public final class WatchActivity extends Activity {
             @Override public void secretTap(){
                 if(secretTapGate!=null)secretTapGate.tap();
             }
+            @Override public void help(){
+                if(pearlUi!=null)pearlUi.showHelp();
+            }
         });
         neonRoot.addView(neonSkin,new FrameLayout.LayoutParams(-1,-1));
         // All original Neon buttons remain beneath this transparent triangle-only
