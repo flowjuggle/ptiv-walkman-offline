@@ -1,0 +1,38 @@
+name: PTIV WFF watch-face collection (isolated test)
+on:
+  push:
+    branches: [ feature/ptiv-wff-watchface-collection-20261114 ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Ensure Android SDK 35
+        shell: bash
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile only the three WFF faces
+        working-directory: wear
+        run: gradle --no-daemon :facepearl:assembleDebug :facenight:assembleDebug :facepulse:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-WFF-Collection-Debug-APKs
+          path: |
+            wear/facepearl/build/outputs/apk/debug/facepearl-debug.apk
+            wear/facenight/build/outputs/apk/debug/facenight-debug.apk
+            wear/facepulse/build/outputs/apk/debug/facepulse-debug.apk
+          if-no-files-found: error

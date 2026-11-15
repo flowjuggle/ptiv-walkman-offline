@@ -1,0 +1,13 @@
+plugins { id 'com.android.application' }
+android {
+ namespace 'live.ptiv.faces.pearl'
+ compileSdk 35
+ defaultConfig {
+  applicationId 'live.ptiv.faces.pearl'
+  minSdk 33
+  targetSdk 34
+  versionCode 1
+  versionName '0.1-dev'
+ }
+ buildTypes { debug { minifyEnabled false }; release { minifyEnabled false } }
+}
