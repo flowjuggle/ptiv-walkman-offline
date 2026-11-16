@@ -1,0 +1,53 @@
+name: PTIV SkinLab three isolated Wear OS APKs
+on:
+  push:
+    branches:
+      - feature/winamp-skinlab-*
+    paths:
+      - 'wear/skinlab/**'
+      - 'wear/settings.gradle'
+      - '.github/workflows/skinlab-watch-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Ensure Android SDK
+        shell: bash
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile three independent watch preview APKs
+        working-directory: wear
+        run: gradle --no-daemon :skinlab:assembleCassetteDebug :skinlab:assembleOrbitDebug :skinlab:assembleLyricsDebug
+      - name: Verify isolated APK package identifiers
+        shell: bash
+        run: |
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          for skin in cassette orbit lyrics; do
+            apk="wear/skinlab/build/outputs/apk/$skin/debug/skinlab-$skin-debug.apk"
+            test -s "$apk"
+            "$AAPT" dump badging "$apk" | grep -F "name='live.ptiv.skinlab.$skin'"
+            if "$AAPT" dump badging "$apk" | grep -q "name='live.ptiv.watch'"; then
+              echo "Unexpected package collision"; exit 1
+            fi
+          done
+      - name: Upload three isolated watch APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTIV-SkinLab-three-watch-UX-previews
+          path: wear/skinlab/build/outputs/apk/*/debug/*.apk
+          if-no-files-found: error

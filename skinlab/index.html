@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09141b"><meta name="color-scheme" content="dark">
+<title>PTIV SkinLab — three alternatives</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./style.css">
+<script src="./app.js" defer></script>
+</head><body>
+<div id="app" class="skin-cassette device-iphone">
+<header class="toolbar">
+ <div class="brand"><strong>PTIV <span>SKINLAB</span></strong><small>Experimental • main Walkman untouched</small></div>
+ <a class="main-link" href="../">↗ Main player</a>
+</header>
+<nav class="choices" aria-label="Choose layout and skin">
+ <label>DEVICE <select id="device"><option value="iphone">iPhone</option><option value="flip">Galaxy Flip</option><option value="fold">Pixel Fold</option><option value="watch">Round watch</option></select></label>
+ <label>SKIN <select id="skin"><option value="cassette">A · Cassette</option><option value="orbit">B · Pearl Orbit</option><option value="lyrics">C · Lyric Stage</option></select></label>
+</nav>
+<main class="stage" id="stage">
+ <section class="display" id="display" aria-label="Immersive music visualizer">
+  <canvas id="visual" width="800" height="800" aria-label="Audio-responsive display; runs in demo mode until music is selected" role="img"></canvas>
+  <div class="visual-shade" aria-hidden="true"></div>
+  <div class="overlay-top"><small id="profileLabel">iPHONE · ORIGINAL UI CONCEPT</small><span id="audioMode">DEMO MOTION — NOT LIVE AUDIO</span></div>
+  <div class="skin-mark" id="skinMark">
+   <div id="cassetteArt" class="cassette-art"><div class="cassette-title">PEARL TRIANGLE</div><div class="cassette-wheels"><i></i><i></i></div><div class="cassette-band"></div></div>
+   <div id="orbitArt" class="orbit-art"><i class="orbit-one"></i><i class="orbit-two"></i><i class="orbit-three"></i><strong>PTIV</strong></div>
+  </div>
+  <div class="display-center" id="lyricPanel" aria-live="off">
+   <span id="lyricState" class="lyric-state">NO REVIEWED LYRICS IMPORTED</span>
+   <div id="lyricScroll" class="lyric-scroll"><p>Choose a reviewed .LRC file to see its words here.</p></div>
+  </div>
+  <div class="display-bottom"><div class="song-name" id="song">Choose music from Files</div><small id="subsong">P.T. ARCHITECH / OFFLINE PREVIEW</small></div>
+ </section>
+ <section class="deck" aria-label="Music controls">
+  <div class="timeline"><span id="elapsed">0:00</span><input id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek position"><span id="duration">0:00</span></div>
+  <div class="transport">
+   <button id="prev" aria-label="Previous track">⏮</button><button id="play" class="play" aria-label="Play or pause">▶</button><button id="next" aria-label="Next track">⏭</button>
+  </div>
+  <div class="quick-actions">
+   <button id="pick" class="add">＋ Add music</button><button id="pickLrc">◉ Import lyrics</button><button id="full">⛶ Focus</button>
+  </div>
+  <div class="status" id="status" role="status" aria-live="polite">Files stay on this phone. Nothing is uploaded or written to the main PTIV library.</div>
+ </section>
+ <section class="library" aria-label="Review selected music files">
+  <details id="libraryDetails"><summary>Selected local tracks <span id="trackCount">0</span></summary><div id="trackList" class="tracks"><p class="placeholder">No local audio selected</p></div></details>
+ </section>
+</main>
+<input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.ogg,.opus" multiple hidden>
+<input type="file" id="lrc" accept=".lrc,.txt,text/plain" hidden>
+<audio id="audio" preload="metadata" playsinline></audio>
+<footer class="disclaimer">Three original UX prototypes based on classic media-player design principles; not copied Winamp skins or MilkDrop presets. Watch APKs are separate no-audio preview apps.</footer>
+</div>
+</body></html>
