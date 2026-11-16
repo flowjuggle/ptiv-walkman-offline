@@ -64,3 +64,11 @@ main > small, #deviceTip { font-size:11px; }
 .progressive-tappable:focus-visible{outline:2px solid #c3f771}
 .focus-caption-import{padding:12px;display:flex;justify-content:center}
 .focus-caption-import button{min-height:44px}
+.cactus-import-panel{border:1px solid #648a79;border-radius:14px;background:#13272a;padding:12px;margin:12px 0}
+.cactus-import-panel h3{font-size:15px;margin:0 0 7px}
+.cactus-import-panel p{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.cactus-import-panel button{min-height:44px}
+.cactus-holds{display:flex;gap:10px;align-items:start;font-size:12px;color:#efcfb5;line-height:1.4;margin:12px 0}
+.cactus-holds input{width:22px;height:22px;flex:none;accent-color:#f5bd6e}
+.cactus-action-row{display:flex;gap:8px;flex-wrap:wrap}.cactus-action-row button{flex:1}
+#cactusImportReport{white-space:normal}

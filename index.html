@@ -107,7 +107,7 @@
 </section>
 <footer><strong>Install:</strong> iPhone: open in regular Safari → Share → Add to Home Screen. Samsung Galaxy / Android: open in Chrome → ⋮ → Add to Home screen → Install app (wording varies). Import music in the installed app separately on each device. Galaxy Watch can control phone playback via Android media controls when supported; a standalone watch player requires its own installed Wear OS app and audio on the watch. The interface and imported files can work offline once cached. Keep master copies in Files or NAS: phones may clear app data under storage pressure.</footer>
 </main>
-<script src="./progressive-lyrics.js"></script><script>
+<script src="./progressive-lyrics.js"></script><script src="./cactus-candidates.js"></script><script>
 'use strict';
 const $=id=>document.getElementById(id), AUDIO=/\.(mp3|m4a|aac|wav|flac|ogg|opus|aif|aiff)$/i;
 const ghost=["Levi Steady","Shacka Boom","Borrowed Gravity","Move Through the Narrow","The Wound That Will Not Heal","Ray's Gun 23","Borrow the End of the World","Boccaccio in the Smoke","Midnight Drops","Ray Multivertse Solo","Velvet Emergency","Everything is under control, the robots form a union at three"];
@@ -120,7 +120,7 @@ function loadIndex(){return new Promise((resolve,reject)=>{const t=db.transactio
 function getTrack(id){if(ephemerals.has(id))return Promise.resolve(ephemerals.get(id));return new Promise((resolve,reject)=>{if(!db)return reject(new Error('Not saved'));const r=db.transaction('songs','readonly').objectStore('songs').get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 function loadLyrics(){return new Promise((resolve,reject)=>{if(!db)return resolve();const q=db.transaction('lyrics','readonly').objectStore('lyrics').openCursor();q.onsuccess=()=>{const c=q.result;if(!c){resolve();return}lyricRecords.set(c.key,c.value);c.continue()};q.onerror=()=>reject(q.error)})}
 function receiptValid(rec){const v=rec?.verification;return rec?.status==='VERIFIED'&&Array.isArray(rec.lines)&&rec.lines.some(l=>l.text?.trim())&&v?.status==='VERIFIED'&&/^[a-f0-9]{64}$/i.test(String(v.master_sha256||''))&&!!String(v.evidence_ref||'').trim()&&!!String(v.reviewed_at||'').trim()&&!!String(v.reviewer||'').trim()}
-function lyricsForCurrent(){if(!active)return null;const song=allMeta().find(x=>x.id===active);if(!song)return null;const rec=lyricRecords.get(norm(song.name))||lyricRecords.get(norm(song.path));return receiptValid(rec)||rec?.status==='ORIGINAL_SOURCE_UNVERIFIED'?rec:null}
+function lyricsForCurrent(){if(!active)return null;const song=allMeta().find(x=>x.id===active);if(!song)return null;const existing=lyricRecords.get(norm(song.name))||lyricRecords.get(norm(song.path));if(receiptValid(existing)||existing?.status==='ORIGINAL_SOURCE_UNVERIFIED')return existing;const archived=window.PTIVCactusCandidates?.resolveSong(song,catalogEntries,catalogAssignments,lyricRecords,norm);return archived?.status==='ORIGINAL_SOURCE_UNVERIFIED'?archived:null}
 function normalizeWords(s){return String(s||'').normalize('NFC').replace(/\s+/g,' ').trim()}
 function lrcParse(text){const lines=[],labels={};for(const sourceLine of text.replace(/\r\n?/g,'\n').split('\n')){const meta=sourceLine.match(/^\[([a-z]{2,12}):([^\]]*)\]$/i);if(meta){labels[meta[1].toLowerCase()]=meta[2].trim();continue}const t=/\[(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?\]/g;const timestamps=[...sourceLine.matchAll(t)];if(!timestamps.length)continue;const textLine=sourceLine.replace(t,'').trim();for(const m of timestamps){const sec=Number(m[1])*60+Number(m[2])+Number('0.'+(m[3]||'0').padEnd(3,'0'));if(Number.isFinite(sec)&&sec>=0)lines.push({time:sec,text:textLine})}}return {labels,lines:lines.sort((a,b)=>a.time-b.time)}}
 async function saveLyrics(rec){lyricRecords.set(rec.key,rec);if(!db)return false;return new Promise(resolve=>{try{let t=db.transaction('lyrics','readwrite');t.objectStore('lyrics').put(rec);t.oncomplete=()=>resolve(true);t.onabort=()=>resolve(false);t.onerror=()=>resolve(false)}catch(e){resolve(false)}})}
@@ -278,6 +278,7 @@ function renderLyrics(){
  badge.textContent=verified
    ?(timing==='reviewed'?'VERIFIED WORDS · REVIEWED TIMING':timing==='source-draft'?'VERIFIED WORDS · TIMING DRAFT':'VERIFIED WORDS · APPROXIMATE SCROLL (IN PROGRESS)')
    :(timing==='source-draft'?'UNVERIFIED WORDS · SOURCE TIMING DRAFT':'UNVERIFIED WORDS · APPROXIMATE SCROLL (IN PROGRESS)');
+ if(rec.source_kind==='PTIV_CACTUS_ARCHIVE_CANDIDATE')badge.textContent=(rec.review_status==='REVIEW_HOLD'?'REVIEW HOLD: WORDS MAY BE WRONG':'CACTUS LYRIC DRAFT')+' | APPROXIMATE SCROLL - NOT VERIFIED';
  rec.lines.forEach((line,i)=>{
   const d=document.createElement('div');d.className='lyricline'+(line.time===null?' untimed':'');
   d.textContent=line.text||' ';
@@ -667,4 +668,4 @@ function setDeviceHint(){
 }
 
 initMediaSession();setDeviceHint();initModes();initDeck();initLyricFont();loadPTIVCatalog();(async()=>{try{db=await dbOpen();await loadIndex();await loadLyrics();msg('Offline library ready. Import your songs to begin.')}catch(e){dbIssue=e?.name||e?.message||'Unknown storage error';msg('Device storage unavailable ('+dbIssue+'): songs will play only until the app closes. Use a regular Safari tab, not Private Browsing, and install from your Home Screen.',true)}redraw();renderLyrics();await refreshStorage();if('serviceWorker'in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(()=>{});}})();
-</script><script src="./focus-ui.js" defer></script></body></html>
+</script><script src="./focus-ui.js" defer></script><script src="./cactus-import-ui.js" defer></script></body></html>

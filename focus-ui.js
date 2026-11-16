@@ -318,7 +318,7 @@ function refreshFocusLyrics(force=false){
  }
  if(!lyricsVisible)return;
  const kind=progress?.mode;
- const wordState=!rec?'NO WORDS':verified?'WORDS VERIFIED':'WORDS NOT AUDIO-VERIFIED';
+ const wordState=!rec?'NO WORDS':rec.review_status==='REVIEW_HOLD'?'REVIEW HOLD: WORDS MAY BE WRONG':rec.source_kind==='PTIV_CACTUS_ARCHIVE_CANDIDATE'?'CACTUS DRAFT WORDS UNVERIFIED':verified?'WORDS VERIFIED':'WORDS NOT AUDIO-VERIFIED';
  const timeState=kind==='reviewed'?'REVIEWED TIMING':kind==='source-draft'?'TIMING DRAFT':kind==='waiting'?'WAITING FOR AUDIO DURATION':'APPROXIMATE SCROLL · IN PROGRESS';
  const markCount=progress?.marks?.length||0;
  $focus('focusLyricStatus').textContent=wordState+' · '+timeState+(markCount?' · '+markCount+' manual mark(s)':'');
