@@ -56,3 +56,11 @@ main > small, #deviceTip { font-size:11px; }
 .focus-footer-tools select { background:#142a2d; border:1px solid #557c74; color:#fff; border-radius:11px; padding:12px; min-height:44px; font-size:12px; }
 @media(max-width:420px) { .focus-actions .btn { font-size:12px; padding:9px 6px; } .focus-lyrics { padding-top:11vh; } .focus-overlay-footer { padding-bottom:11px; } }
 @media(prefers-reduced-motion:reduce) { .focus-lyrics { scroll-behavior:auto; } }
+
+.focus-draft-hint{color:#c0d9c9;text-align:center;font-size:11px;padding:4px 14px 8px;line-height:1.4}
+.focus-line[role=button]{cursor:pointer}
+.focus-line[role=button]:focus-visible{outline:2px solid #c3f771;outline-offset:2px}
+.progressive-tappable{cursor:pointer}
+.progressive-tappable:focus-visible{outline:2px solid #c3f771}
+.focus-caption-import{padding:12px;display:flex;justify-content:center}
+.focus-caption-import button{min-height:44px}

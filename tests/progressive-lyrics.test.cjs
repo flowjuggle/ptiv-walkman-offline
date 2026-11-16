@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict');
+const values=new Map();global.localStorage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)};
+const P=require('../progressive-lyrics.js');
+const rec={key:'test',name:'Synthetic',status:'ORIGINAL_SOURCE_UNVERIFIED',timing_status:'NONE',lines:Array.from({length:12},(_,i)=>({text:'Line '+(i+1)+' of synthetic text',time:null}))};
+const original=JSON.stringify(rec);let passed=0;
+function test(name,fn){fn();passed++;console.log('PASS '+name)}
+test('text preserved',()=>assert.equal(P.timeline(rec,120,'track').lines.length,12));
+test('estimated mode labeled',()=>assert.equal(P.timeline(rec,120,'track').status,'ESTIMATED_SCROLL_IN_PROGRESS'));
+test('strict times',()=>{let t=P.timeline(rec,120,'track').times;for(let i=1;i<t.length;i++)assert(t[i]>t[i-1])});
+test('scroll tracks time',()=>assert(P.follow(rec,120,100,'track').index>P.follow(rec,120,30,'track').index));
+test('no invented timing without duration',()=>assert.equal(P.timeline(rec,NaN,'track').times.length,0));
+test('manual mark stored',()=>{assert.equal(P.mark(rec,'track',5,32,120).ok,true);assert.equal(P.timeline(rec,120,'track').times[5],32)});
+test('original text never changed',()=>assert.equal(JSON.stringify(rec),original));
+test('draft export not publishable',()=>{let d=P.exportDraft(rec,'track',120);assert.equal(d.publishReady,false);assert.equal(d.certification,'NONE')});
+test('revisions invalidate anchors',()=>{let x=structuredClone(rec);x.lines[0].text='changed';assert.equal(P.timeline(x,120,'track').marks.length,0)});
+test('track isolation',()=>assert.equal(P.timeline(rec,120,'track2').marks.length,0));
+test('unknown duration preserves words',()=>assert.equal(P.timeline(rec,NaN,'track').lines.length,12));
+test('source timestamps remain draft',()=>{let x=structuredClone(rec);x.lines.forEach((l,i)=>l.time=5+i*9);assert.equal(P.timeline(x,120,'track2').mode,'source-draft')});
+test('contradictory source timestamps fallback',()=>{let x=structuredClone(rec);x.lines[0].time=30;x.lines[1].time=4;assert.equal(P.timeline(x,120,'track2').mode,'estimated')});
+test('no invalid timing marks',()=>{assert.equal(P.mark(rec,'track',99,8,120).ok,false);assert.equal(P.mark(rec,'track',1,-1,120).ok,false)});
+test('reject out-of-order correction',()=>{assert.equal(P.mark(rec,'track',2,70,120).ok,false);assert.equal(P.readAnchors(rec,'track',120).length,1)});
+test('undo correction',()=>{assert.equal(P.undo(rec,'track',120).ok,true);assert.equal(P.readAnchors(rec,'track',120).length,0)});
+test('avoid stale duration',()=>{assert.equal(P.mark(rec,'track',6,45,120).ok,true);assert.equal(P.readAnchors(rec,'track',180).length,0)});
+test('empty words no invented text',()=>assert.equal(P.timeline({key:'none',lines:[]},100,'none').lines.length,0));
+console.log('PASS_TOTAL='+passed);

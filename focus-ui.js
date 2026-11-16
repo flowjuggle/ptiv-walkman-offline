@@ -158,29 +158,173 @@ audio.addEventListener('timeupdate',()=>{
 audio.addEventListener('loadedmetadata',updateFocusPlayback);
 audio.addEventListener('ended',updateFocusPlayback);
 
+const progressive=window.PTIVProgressiveLyrics;
+const focusUndo=document.createElement('button');
+focusUndo.type='button';focusUndo.id='focusUndoDraft';focusUndo.className='focus-iconbutton';
+focusUndo.textContent='Undo mark';focusUndo.title='Undo last local timing correction';
+const focusExport=document.createElement('button');
+focusExport.type='button';focusExport.id='focusExportDraft';focusExport.className='focus-iconbutton';
+focusExport.textContent='Export draft';focusExport.title='Save approximate timestamps as an explicitly unverified JSON file';
+const focusToolRow=$focus('focusFontPlus')?.parentElement;
+if(focusToolRow){focusToolRow.append(focusUndo,focusExport)}
+const focusDraftAnnouncement=document.createElement('div');
+focusDraftAnnouncement.className='focus-draft-hint';
+focusDraftAnnouncement.textContent='Tap a lyric line to mark where it occurs in the song. Approximate only; original text stays unchanged.';
+$focus('focusLyricStatus').after(focusDraftAnnouncement);
+focusUndo.onclick=()=>{
+ const rec=lyricsForCurrent();
+ if(!rec)return;
+ const changed=progressive?.undo(rec,active,audio.duration);
+ if(!changed?.ok){$focus('focusLyricStatus').textContent=changed?.reason||'No correction available';return}
+ refreshFocusLyrics(true);syncLyrics();
+};
+focusExport.onclick=()=>{
+ const rec=lyricsForCurrent();
+ if(!rec){$focus('focusLyricStatus').textContent='Import lyrics first';return}
+ const data=progressive?.exportDraft(rec,active,audio.duration);
+ if(!data)return;
+ const text=JSON.stringify(data,null,2);
+ const filename=fileSafeTitle(rec.name||'Track')+'_APPROXIMATE_NOT_VERIFIED.json';
+ userExport(filename,text,'application/json');
+};
+// Explicitly selected YouTube/WebVTT, SRT, LRC or text captions are lyric CANDIDATES.
+const captionInput=document.createElement('input');
+captionInput.type='file';captionInput.id='focusCaptionFile';
+captionInput.accept='.vtt,.srt,.lrc,.txt,text/plain';captionInput.hidden=true;
+const captionButton=document.createElement('button');
+captionButton.type='button';captionButton.id='focusCaptionButton';captionButton.className='btn alt';
+captionButton.textContent='Import caption candidate (.vtt/.srt/.lrc/.txt)';
+captionButton.title='Use a subtitle file you selected as an unverified lyric candidate for the currently playing track';
+const lyricsImportSection=$focus('focusLyricsExtra');
+if(lyricsImportSection){
+ const line=document.createElement('div');
+ line.className='focus-caption-import';
+ line.append(captionButton,captionInput);
+ lyricsImportSection.append(line);
+}
+captionButton.onclick=()=>{
+ const song=allMeta().find(x=>x.id===active);
+ if(!song){
+  $focus('lyricsNote').textContent='Choose a local PTIV track before importing its caption file.';
+  $focus('lyricsNote').className='lyrics-info warning';return;
+ }
+ captionInput.click();
+};
+function parseCandidateCaptions(filename,raw){
+ const text=String(raw).replace(/\r\n?/g,'\n').replace(/^\uFEFF/,'');
+ const out=[];
+ function add(time,caption){
+  const clean=caption.replace(/<[^>]*>/g,'').replace(/\{\\an\d+\}/g,'').trim();
+  if(clean&&!/^(WEBVTT|NOTE(?:\s+.*)?|[0-9]+)$/i.test(clean)){
+   out.push({time:Number.isFinite(time)?time:null,text:clean});
+  }
+ }
+ const ext=filename.toLowerCase().split('.').pop();
+ if(ext==='txt'){
+  for(const line of text.split('\n').slice(0,4000))if(line.trim())add(null,line);
+ }else if(ext==='lrc'){
+  const parsed=lrcParse(text);
+  for(const item of parsed.lines.slice(0,4000))add(item.time,item.text);
+ }else{
+  // Keep the full original caption text separately; the displayed text is only a candidate.
+  const parseTime=s=>{
+    const parts=String(s).replace(',','.').split(':').map(Number);
+    if(parts.length===2&&parts.every(Number.isFinite))return parts[0]*60+parts[1];
+    if(parts.length===3&&parts.every(Number.isFinite))return parts[0]*3600+parts[1]*60+parts[2];
+    return null;
+  };
+  for(const block of text.split(/\n\s*\n/)){
+   const lines=block.split('\n').map(x=>x.trim()).filter(Boolean);
+   const idx=lines.findIndex(x=>x.includes('-->'));
+   if(idx<0)continue;
+   const a=lines[idx].split('-->')[0].trim();
+   const at=parseTime(a);
+   const displayed=lines.slice(idx+1).join(' ').trim();
+   if(displayed)add(at,displayed);
+   if(out.length>=4000)break;
+  }
+ }
+ return out;
+}
+captionInput.onchange=async e=>{
+ const file=e.target.files?.[0];e.target.value='';if(!file)return;
+ const song=allMeta().find(x=>x.id===active),note=$focus('lyricsNote');
+ if(!song){note.textContent='No track selected. Nothing imported.';return}
+ const key=norm(song.name);
+ const prior=lyricRecords.get(key)||lyricRecords.get(norm(song.path));
+ if(prior){
+  note.className='lyrics-info warning';
+  note.textContent=receiptValid(prior)
+   ?'Preserved the verified lyric source. Caption candidates will not replace it.'
+   :'Existing lyric candidate preserved. Export or review it before attempting replacement.';
+  return;
+ }
+ if(!/\.(vtt|srt|lrc|txt)$/i.test(file.name)||file.size>500000){
+  note.textContent='Choose a VTT, SRT, LRC or TXT subtitle file under 500 KB.';note.className='lyrics-info warning';return;
+ }
+ try{
+  const original=await file.text();
+  const lines=parseCandidateCaptions(file.name,original);
+  if(lines.length<1){note.textContent='No caption lines found. Nothing imported.';note.className='lyrics-info warning';return}
+  const rec={
+   key,name:song.name,source:file.name,source_kind:'CAPTION_CANDIDATE',kind:lines.some(l=>Number.isFinite(l.time))?'lrc':'text',
+   status:'ORIGINAL_SOURCE_UNVERIFIED',timing_status:'CAPTION_DRAFT',
+   source_origin:'USER_SELECTED_FILE',source_text_original:original,
+   importedAt:new Date().toISOString(),
+   lines
+  };
+  const saved=await saveLyrics(rec);
+  renderLyrics();
+  if(!overlay.classList.contains('hidden'))refreshFocusLyrics(true);
+  note.className='lyrics-info warning';
+  note.textContent='Loaded '+lines.length+' caption candidate lines for '+song.name+
+   (saved?' (available offline on this device).':' (session-only; offline storage unavailable).')+
+   ' NOT audio-verified. Timing is tentative, and no lyrics were published or changed on Too Lost.';
+ }catch(err){note.className='lyrics-info warning';note.textContent='Caption import failed: '+(err?.message||err)}
+};
 function refreshFocusLyrics(force=false){
  if(overlay.classList.contains('hidden'))return;
- const rec=lyricsForCurrent();
- const items=Array.isArray(rec?.lines)?rec.lines.filter(l=>String(l.text||'').trim()):[];
- const verified=receiptValid(rec);
- const sig=[active,rec?.key,rec?.status,rec?.timing_status,items.length,items[0]?.text,items[items.length-1]?.text].join('|');
+ const rec=lyricsForCurrent(),verified=receiptValid(rec);
+ const progress=rec?progressive?.follow(rec,audio.duration,audio.currentTime,active):null;
+ const items=progress?.lines||[];
+ const sig=[active,rec?.key,rec?.status,rec?.timing_status,items.length,progressive?.fingerprint(rec)].join('|');
  const host=$focus('focusLyricText');
- if(force||sig!==focusLyricSignature) {
-   focusLyricSignature=sig; focusLineIndex=-2;
-   host.replaceChildren();
-   if(!rec||!items.length) {
+ if(force||sig!==focusLyricSignature){
+   focusLyricSignature=sig;focusLineIndex=-2;host.replaceChildren();
+   if(!items.length){
      const p=document.createElement('p');p.className='focus-message';
-     p.textContent='No lyrics have been imported for this song. Use Lyrics sources to add the original or reviewed words.';
-     host.append(p);
-   } else {
-     for(const item of items){const line=document.createElement('p');line.className='focus-line dim';line.textContent=item.text;host.append(line)}
+     p.textContent='No lyrics available for this track yet. Import your original words, a reviewed source, or a caption candidate. The app never invents lyrics.';
+     host.appendChild(p);
+   }else{
+     for(const item of items){
+       const line=document.createElement('p');
+       line.className='focus-line dim';
+       line.textContent=item.text;
+       line.tabIndex=0;line.setAttribute('role','button');
+       line.title='Tap to align this line at the current playback position (local draft)';
+       line.setAttribute('aria-label','Align this lyric to current playback position, approximate timing only');
+       const tap=()=>{
+          const result=progressive?.mark(rec,active,item.sourceIndex,audio.currentTime,audio.duration);
+          if(result?.ok){
+            refreshFocusLyrics(true);
+            syncLyrics();
+          }else{$focus('focusLyricStatus').textContent=result?.reason||'Unable to mark this line';}
+       };
+       line.addEventListener('click',tap);
+       line.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tap()}});
+       host.appendChild(line);
+     }
    }
  }
  if(!lyricsVisible)return;
- $focus('focusLyricStatus').textContent=!rec?'NO LYRICS ON DEVICE':!verified?'ORIGINAL WORDS · NOT AUDIO-VERIFIED':rec.timing_status==='AI_DRAFT'?'WORDS VERIFIED · AI TIMING DRAFT':'VERIFIED WORDS · NO VERIFIED TIMING';
- const canFollow=verified&&rec.timing_status==='AI_DRAFT';
- let idx=-1;
- if(canFollow){for(let i=0;i<items.length;i++){const line=items[i];if(Number.isFinite(line.time)&&line.time<=audio.currentTime+.05)idx=i;else if(Number.isFinite(line.time))break}}
+ const kind=progress?.mode;
+ const wordState=!rec?'NO WORDS':verified?'WORDS VERIFIED':'WORDS NOT AUDIO-VERIFIED';
+ const timeState=kind==='reviewed'?'REVIEWED TIMING':kind==='source-draft'?'TIMING DRAFT':kind==='waiting'?'WAITING FOR AUDIO DURATION':'APPROXIMATE SCROLL · IN PROGRESS';
+ const markCount=progress?.marks?.length||0;
+ $focus('focusLyricStatus').textContent=wordState+' · '+timeState+(markCount?' · '+markCount+' manual mark(s)':'');
+ focusUndo.disabled=!markCount;
+ focusExport.disabled=!items.length;
+ const idx=progress?.index??-1;
  if(idx===focusLineIndex)return;
  if(focusLineIndex>=0&&host.children[focusLineIndex])host.children[focusLineIndex].classList.remove('active');
  if(idx>=0&&host.children[idx]){
