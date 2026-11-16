@@ -107,7 +107,7 @@
 </section>
 <footer><strong>Install:</strong> iPhone: open in regular Safari → Share → Add to Home Screen. Samsung Galaxy / Android: open in Chrome → ⋮ → Add to Home screen → Install app (wording varies). Import music in the installed app separately on each device. Galaxy Watch can control phone playback via Android media controls when supported; a standalone watch player requires its own installed Wear OS app and audio on the watch. The interface and imported files can work offline once cached. Keep master copies in Files or NAS: phones may clear app data under storage pressure.</footer>
 </main>
-<script>
+<script src="./progressive-lyrics.js"></script><script>
 'use strict';
 const $=id=>document.getElementById(id), AUDIO=/\.(mp3|m4a|aac|wav|flac|ogg|opus|aif|aiff)$/i;
 const ghost=["Levi Steady","Shacka Boom","Borrowed Gravity","Move Through the Narrow","The Wound That Will Not Heal","Ray's Gun 23","Borrow the End of the World","Boccaccio in the Smoke","Midnight Drops","Ray Multivertse Solo","Velvet Emergency","Everything is under control, the robots form a union at three"];
@@ -160,7 +160,7 @@ function deckIndexFromHash(){const v=decodeURIComponent(location.hash.replace(/^
 function setDeck(index,fromHash=false){deckIndex=(index+DECK_NAMES.length)%DECK_NAMES.length;try{localStorage.setItem(DECK_KEY,String(deckIndex))}catch(e){}if(!fromHash){const hash='#deck='+DECK_NAMES[deckIndex];if(location.hash!==hash)history.replaceState(null,'',location.pathname+location.search+hash)}renderDeck()}
 function deckText(parent,text,cls=''){const d=document.createElement('p');if(cls)d.className=cls;d.textContent=text;parent.appendChild(d);return d}
 function makeDeckLink(parent,title,url){const a=document.createElement('a');a.textContent=title;a.href=url;a.target='_blank';a.rel='noopener noreferrer';parent.appendChild(a)}
-function renderDeck(){const activeFace=$('deckFace'),base=$('cassetteFace'),name=DECK_NAMES[deckIndex],track=allMeta().find(x=>x.id===active),rec=lyricsForCurrent();$('deckStatus').textContent=(deckIndex+1)+'/4 · '+name;const showAlt=deckIndex!==0;base.classList.toggle('hidden',showAlt);activeFace.classList.toggle('hidden',!showAlt);if(!showAlt)return;activeFace.replaceChildren();const head=document.createElement('h3');head.textContent=({lyrics:'Lyrics on cassette',info:'Now playing · Details',listen:'Listen / Discover',visualizer:'PTIV Spectrum · Live audio'})[name];activeFace.append(head);if(name==='visualizer'){renderVisualizer(activeFace);return}if(name==='lyrics'){if(!rec){deckText(activeFace,'Choose a track with imported original lyrics. No lyrics are invented.');return}const verified=receiptValid(rec);deckText(activeFace,verified?'VERIFIED SOURCE WORDS':'ORIGINAL SOURCE · NOT AUDIO-VERIFIED','deck-meta');const holder=document.createElement('div');holder.className='deck-lines';activeFace.appendChild(holder);const lines=rec.lines.filter(l=>l.text&&l.text.trim());if(!lines.length){deckText(holder,'No lyric lines found.');return}let current=-1;if(rec.timing_status==='AI_DRAFT'){for(let k=0;k<lines.length;k++)if(lines[k].time!==null&&lines[k].time<=audio.currentTime+0.05)current=k}const from=Math.max(0,current>=0?current-1:0);lines.slice(from,from+6).forEach((line,i)=>{const el=deckText(holder,line.text,from+i===current?'current':'');el.title=line.time===null?'Original lyrics':'Timing candidate '+fmt(line.time)});deckLastLine=current;return}if(name==='info'){deckText(activeFace,track?'Title: '+track.name:'No song selected yet.','deck-meta');deckText(activeFace,'Artist: P.T. Architech','deck-meta');deckText(activeFace,'Album: '+(rec?.album||catalogEntries.find(x=>matches(x.title,track?.name||''))?.album||'PTIV Local Library'),'deck-meta');if(track)deckText(activeFace,'File: '+track.path+' · '+Math.round(track.size/1048576*10)/10+' MB','deck-meta');if(audio.duration)deckText(activeFace,'Duration: '+fmt(audio.duration),'deck-meta');deckText(activeFace,'Lyrics: '+(rec?(receiptValid(rec)?'words verified':'original source awaiting audio verification'):'not imported'),'deck-meta');return}if(name==='listen'){const catalogMatch=track?catalogEntries.find(x=>matches(x.title,track.name)):null;const isGhost=catalogMatch?catalogMatch.releaseStatus==='unreleased':!!(rec?.album?.toLowerCase().includes('ghost in the wire')||playbackContext==='ghost');if(isGhost)deckText(activeFace,'Ghost in the Wire is not yet published. This copy plays locally, offline. There are no verified direct streaming links for this album.');else deckText(activeFace,'Browse P.T. Architech on music platforms. These are searches, not confirmed track-specific links.');const links=document.createElement('div');links.className='deck-external';activeFace.appendChild(links);const artist='P.T. Architech';makeDeckLink(links,'Spotify artist search','https://open.spotify.com/search/'+encodeURIComponent(artist));makeDeckLink(links,'Apple Music search','https://music.apple.com/us/search?term='+encodeURIComponent(artist));makeDeckLink(links,'YouTube Music search','https://music.youtube.com/search?q='+encodeURIComponent(artist));makeDeckLink(links,'Qobuz discography','https://www.qobuz.com/us-en/interpreter/pt-architech/32553437');deckText(activeFace,'These discovery links require internet. Local playback and lyrics do not.','deck-meta')}}
+function renderDeck(){const activeFace=$('deckFace'),base=$('cassetteFace'),name=DECK_NAMES[deckIndex],track=allMeta().find(x=>x.id===active),rec=lyricsForCurrent();$('deckStatus').textContent=(deckIndex+1)+'/4 · '+name;const showAlt=deckIndex!==0;base.classList.toggle('hidden',showAlt);activeFace.classList.toggle('hidden',!showAlt);if(!showAlt)return;activeFace.replaceChildren();const head=document.createElement('h3');head.textContent=({lyrics:'Lyrics on cassette',info:'Now playing · Details',listen:'Listen / Discover',visualizer:'PTIV Spectrum · Live audio'})[name];activeFace.append(head);if(name==='visualizer'){renderVisualizer(activeFace);return}if(name==='lyrics'){if(!rec){deckText(activeFace,'Choose a track with imported original lyrics. No lyrics are invented.');return}const verified=receiptValid(rec);deckText(activeFace,verified?'VERIFIED SOURCE WORDS':'ORIGINAL SOURCE · NOT AUDIO-VERIFIED','deck-meta');const holder=document.createElement('div');holder.className='deck-lines';activeFace.appendChild(holder);const lines=rec.lines.filter(l=>l.text&&l.text.trim());if(!lines.length){deckText(holder,'No lyric lines found.');return}const current=window.PTIVProgressiveLyrics?.follow(rec,audio.duration,audio.currentTime,active)?.index??-1;const from=Math.max(0,current>=0?current-1:0);lines.slice(from,from+6).forEach((line,i)=>{const el=deckText(holder,line.text,from+i===current?'current':'');el.title=line.time===null?'Original lyrics':'Timing candidate '+fmt(line.time)});deckLastLine=current;return}if(name==='info'){deckText(activeFace,track?'Title: '+track.name:'No song selected yet.','deck-meta');deckText(activeFace,'Artist: P.T. Architech','deck-meta');deckText(activeFace,'Album: '+(rec?.album||catalogEntries.find(x=>matches(x.title,track?.name||''))?.album||'PTIV Local Library'),'deck-meta');if(track)deckText(activeFace,'File: '+track.path+' · '+Math.round(track.size/1048576*10)/10+' MB','deck-meta');if(audio.duration)deckText(activeFace,'Duration: '+fmt(audio.duration),'deck-meta');deckText(activeFace,'Lyrics: '+(rec?(receiptValid(rec)?'words verified':'original source awaiting audio verification'):'not imported'),'deck-meta');return}if(name==='listen'){const catalogMatch=track?catalogEntries.find(x=>matches(x.title,track.name)):null;const isGhost=catalogMatch?catalogMatch.releaseStatus==='unreleased':!!(rec?.album?.toLowerCase().includes('ghost in the wire')||playbackContext==='ghost');if(isGhost)deckText(activeFace,'Ghost in the Wire is not yet published. This copy plays locally, offline. There are no verified direct streaming links for this album.');else deckText(activeFace,'Browse P.T. Architech on music platforms. These are searches, not confirmed track-specific links.');const links=document.createElement('div');links.className='deck-external';activeFace.appendChild(links);const artist='P.T. Architech';makeDeckLink(links,'Spotify artist search','https://open.spotify.com/search/'+encodeURIComponent(artist));makeDeckLink(links,'Apple Music search','https://music.apple.com/us/search?term='+encodeURIComponent(artist));makeDeckLink(links,'YouTube Music search','https://music.youtube.com/search?q='+encodeURIComponent(artist));makeDeckLink(links,'Qobuz discography','https://www.qobuz.com/us-en/interpreter/pt-architech/32553437');deckText(activeFace,'These discovery links require internet. Local playback and lyrics do not.','deck-meta')}}
 function initDeck(){const hash=deckIndexFromHash();if(hash>=0)deckIndex=hash;else try{const prior=Number(localStorage.getItem(DECK_KEY));if(Number.isInteger(prior)&&prior>=0&&prior<DECK_NAMES.length)deckIndex=prior}catch(e){}renderDeck()}
 $('deckNext').onclick=()=>setDeck(deckIndex+1);$('deckPrev').onclick=()=>setDeck(deckIndex-1);
 $('tape').addEventListener('click',e=>{if(e.target.closest('button,a,input'))return;if(Date.now()-deckLastSwipe<450)return;const now=Date.now();deckTapCount=now-deckLastTap<550?deckTapCount+1:1;deckLastTap=now;if(deckTapCount>=3){deckTapCount=0;setDeck(deckIndex+1)}});
@@ -260,8 +260,64 @@ $('exportLyricTxt').onclick=()=>{const rec=currentExportRecord();if(!rec)return;
 $('exportLyricLrc').onclick=()=>{const rec=currentExportRecord();if(!rec)return;if(!rec.lines.some(l=>l.time!==null&&Number.isFinite(l.time))){$('lyricsNote').textContent='No timestamps available for this song. TXT export is ready; LRC export requires reviewed or draft timings.';$('lyricsNote').className='lyrics-info warning';return}const lrc=['[ti:'+rec.name+']','[ar:'+String(rec.artist||'P.T. Architech')+']',...rec.lines.filter(l=>l.time!==null&&Number.isFinite(l.time)).map(l=>'['+lrcTime(l.time)+']'+l.text)].join('\n');userExport(fileSafeTitle(rec.name)+'.lrc',lrc)};
 $('exportLyricRecord').onclick=()=>{const rec=currentExportRecord();if(rec)userExport(fileSafeTitle(rec.name)+'_lyrics_record.json',JSON.stringify(rec,null,2),'application/json')};
 $('exportAllLyrics').onclick=()=>{if(!lyricRecords.size){$('lyricsNote').textContent='No lyric files have been imported yet.';return}userExport('PTIV_Walkman_local_lyrics_backup.json',JSON.stringify({format:'PTIV_WALKMAN_LYRICS_EXPORT_V1',exportedAt:new Date().toISOString(),tracks:[...lyricRecords.values()]},null,2),'application/json')};
-function renderLyrics(){const display=$('lyricDisplay'),badge=$('lyricsBadge'),songName=$('lyricsSong'),rec=lyricsForCurrent();display.replaceChildren();activeLyricKey=rec?.key||null;activeLyricLine=-1;lastLyricsScroll=-1;const song=allMeta().find(x=>x.id===active);songName.textContent=song?'Playing: '+song.name:'Choose a song to see its original or verified lyrics.';if(!rec){badge.textContent='NO LYRICS ON DEVICE';const p=document.createElement('p');p.className='lyrics-empty';p.textContent='Import the original source_manifest.json from your own album archive or a verified Workbench R3 lyrics export. AI never writes the words.';display.append(p);renderDeck();return}const verified=receiptValid(rec);badge.textContent=verified?(rec.timing_status==='AI_DRAFT'?'WORDS VERIFIED · AI TIMING DRAFT':'WORDS VERIFIED · NOT TIMED'):'ORIGINAL SOURCE · NOT AUDIO-VERIFIED';for(const l of rec.lines){const d=document.createElement('div');d.className='lyricline'+(l.time===null?' untimed':'');d.textContent=l.text||' ';display.appendChild(d)}if(rec.kind==='lrc'&&verified)syncLyrics();renderDeck()}
-function syncLyrics(){const rec=lyricsForCurrent();if(!receiptValid(rec)||rec.timing_status!=='AI_DRAFT')return;let i=-1;for(let j=0;j<rec.lines.length;j++){if(rec.lines[j].time!==null&&rec.lines[j].time<=audio.currentTime+0.05)i=j;else if(rec.lines[j].time!==null)break}if(i===activeLyricLine)return;const container=$('lyricDisplay');if(activeLyricLine>=0&&container.children[activeLyricLine])container.children[activeLyricLine].classList.remove('active');activeLyricLine=i;if(i>=0&&container.children[i]){const el=container.children[i];el.classList.add('active');const target=el.offsetTop-container.offsetTop-container.clientHeight/2+el.clientHeight/2;container.scrollTo({top:Math.max(0,target),behavior:Math.abs(container.scrollTop-target)>240?'auto':'smooth'})}}
+function renderLyrics(){
+ const display=$('lyricDisplay'),badge=$('lyricsBadge'),songName=$('lyricsSong'),rec=lyricsForCurrent();
+ display.replaceChildren();activeLyricKey=rec?.key||null;activeLyricLine=-1;lastLyricsScroll=-1;
+ const song=allMeta().find(x=>x.id===active);
+ songName.textContent=song?'Playing: '+song.name:'Choose a song to see original or review-in-progress lyrics.';
+ if(!rec){
+  badge.textContent='NO LYRICS ON DEVICE';
+  const p=document.createElement('p');p.className='lyrics-empty';
+  p.textContent='Lyrics not yet available for this track. Original-source, caption-candidate, and verified lyric imports are kept separate; words are never invented.';
+  display.append(p);renderDeck();return;
+ }
+ const verified=receiptValid(rec);
+ const pf=window.PTIVProgressiveLyrics;
+ const result=pf?.timeline(rec,audio.duration,active);
+ const timing=result?.mode||'estimated';
+ badge.textContent=verified
+   ?(timing==='reviewed'?'VERIFIED WORDS · REVIEWED TIMING':timing==='source-draft'?'VERIFIED WORDS · TIMING DRAFT':'VERIFIED WORDS · APPROXIMATE SCROLL (IN PROGRESS)')
+   :(timing==='source-draft'?'UNVERIFIED WORDS · SOURCE TIMING DRAFT':'UNVERIFIED WORDS · APPROXIMATE SCROLL (IN PROGRESS)');
+ rec.lines.forEach((line,i)=>{
+  const d=document.createElement('div');d.className='lyricline'+(line.time===null?' untimed':'');
+  d.textContent=line.text||' ';
+  if(String(line.text||'').trim()){
+   d.classList.add('progressive-tappable');d.tabIndex=0;d.setAttribute('role','button');
+   d.setAttribute('aria-label','Align this lyric line to the current playback position, draft only');
+   d.title='Tap to mark this line at the current playback time — draft only';
+   const align=()=>{
+    const saved=pf?.mark(rec,active,i,audio.currentTime,audio.duration);
+    const note=$('lyricsNote');
+    if(note){
+      note.className='lyrics-info warning';
+      note.textContent=saved?.ok
+        ?'Approximate timing updated: line '+saved.line+' marked at '+fmt(saved.time)+'. This is a local draft, not a verified timestamp. Original words unchanged.'
+        :(saved?.reason||'Unable to mark this timing.');
+    }
+    if(saved?.ok){activeLyricLine=-1;syncLyrics();if(deckIndex===1)renderDeck()}
+   };
+   d.addEventListener('click',align);
+   d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();align()}});
+  }
+  display.appendChild(d);
+ });
+ syncLyrics();renderDeck();
+}
+function syncLyrics(){
+ const rec=lyricsForCurrent(),pf=window.PTIVProgressiveLyrics;
+ if(!rec||!pf)return;
+ const result=pf.follow(rec,audio.duration,audio.currentTime,active);
+ const i=result.sourceIndex;
+ if(i===activeLyricLine)return;
+ const container=$('lyricDisplay');
+ if(activeLyricLine>=0&&container.children[activeLyricLine])container.children[activeLyricLine].classList.remove('active');
+ activeLyricLine=i;
+ if(i>=0&&container.children[i]){
+  const el=container.children[i];el.classList.add('active');
+  const target=el.offsetTop-container.offsetTop-container.clientHeight/2+el.clientHeight/2;
+  container.scrollTo({top:Math.max(0,target),behavior:Math.abs(container.scrollTop-target)>240?'auto':'smooth'});
+ }
+}
 function fmt(t){if(!Number.isFinite(t))return '0:00';t=Math.floor(t);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
 const numberOfSongs=()=>stored.size+ephemerals.size;
 function allMeta(){return [...stored.values(),...Array.from(ephemerals.values(),r=>{const {blob,...m}=r;return m})].sort((a,b)=>a.name.localeCompare(b.name))}
@@ -294,7 +350,7 @@ $('play').onclick=()=>{if(audio.paused){if(active&&audio.src){audio.play().catch
 function step(dir,automatic=false){if(automatic&&!continuous)return;if(!playIds.length){msg('Import songs first.',true);return}let k=playIds.indexOf(active);if(k<0)k=0;if(automatic&&shuffle&&dir>0&&k===playIds.length-1&&playIds.length>1){rebuildQueue(active);k=0}const next=playIds[(k+dir+playIds.length)%playIds.length];if(next)selectTrack(next,true)}
 $('next').onclick=()=>step(1);$('prev').onclick=()=>audio.currentTime>4?audio.currentTime=0:step(-1);
 audio.onplay=()=>{$('play').textContent='❚❚ Pause';$('tape').classList.add('spinning');mediaPlaybackState();if(vizContext?.state==='suspended')vizContext.resume().catch(()=>{})};audio.onpause=()=>{$('play').textContent='▶ Play';$('tape').classList.remove('spinning');mediaPlaybackState()};audio.onended=()=>step(1,true);audio.onerror=()=>msg('This audio format could not play on this device. Try MP3/AAC or use VLC.',true);
-audio.ontimeupdate=()=>{syncLyrics();if(deckIndex===1){const rec=lyricsForCurrent();if(rec?.timing_status==='AI_DRAFT'){let k=-1;for(let i=0;i<rec.lines.length;i++){const line=rec.lines[i];if(line.time!==null&&line.time<=audio.currentTime+0.05)k=i}if(k!==deckLastLine)renderDeck()}}$('elapsed').textContent=fmt(audio.currentTime);mediaPositionState();if(!seeks&&audio.duration)$('seek').value=Math.round(1000*audio.currentTime/audio.duration)};audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration);mediaPositionState()};$('seek').oninput=()=>seeks=true;$('seek').onchange=e=>{if(Number.isFinite(audio.duration))audio.currentTime=(+e.target.value/1000)*audio.duration;seeks=false};
+audio.ontimeupdate=()=>{syncLyrics();if(deckIndex===1){const rec=lyricsForCurrent();if(rec){const k=window.PTIVProgressiveLyrics?.follow(rec,audio.duration,audio.currentTime,active)?.index??-1;if(k!==deckLastLine)renderDeck()}}$('elapsed').textContent=fmt(audio.currentTime);mediaPositionState();if(!seeks&&audio.duration)$('seek').value=Math.round(1000*audio.currentTime/audio.duration)};audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration);mediaPositionState()};$('seek').oninput=()=>seeks=true;$('seek').onchange=e=>{if(Number.isFinite(audio.duration))audio.currentTime=(+e.target.value/1000)*audio.duration;seeks=false};
 
 const CATALOG_TAG_KEY='ptiv-walkman-catalog-tags-v1';
 const CATALOG_ASSIGN_KEY='ptiv-walkman-catalog-assignments-v1';
