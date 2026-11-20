@@ -30,9 +30,9 @@ public final class NeonSkinView extends View {
         void lyrics();
         void shuffle();
     }
-    private static final int CYAN=Color.rgb(26,231,243);
-    private static final int ORANGE=Color.rgb(255,165,30);
-    private static final int VIOLET=Color.rgb(193,72,252);
+    private int CYAN=Color.rgb(26,231,243);
+    private int ORANGE=Color.rgb(255,165,30);
+    private int VIOLET=Color.rgb(193,72,252);
     private static final int WHITE=Color.rgb(243,250,254);
     private static final int BG=Color.rgb(5,11,24);
     private final State state;
@@ -40,15 +40,46 @@ public final class NeonSkinView extends View {
     private final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
     private float touchX=216, touchY=216;
     private final RectF rr=new RectF();
+    // Preserve the protected Kattus build: themes are local to this experimental variant.
+    private static final String THEME_PREFS="ptiv_walkman_neon_palette_v1";
+    private int paletteMode=0;
+    private int pearlTapCount=0;
+    private long lastPearlTapMs=0L;
+
+    private void applyPalette(int choice) {
+        paletteMode=((choice%3)+3)%3;
+        if(paletteMode==0){
+            ORANGE=Color.rgb(255,165,30); CYAN=Color.rgb(26,231,243); VIOLET=Color.rgb(193,72,252);
+        }else if(paletteMode==1){
+            ORANGE=Color.rgb(26,231,243); CYAN=Color.rgb(193,72,252); VIOLET=Color.rgb(255,165,30);
+        }else{
+            ORANGE=Color.rgb(193,72,252); CYAN=Color.rgb(255,165,30); VIOLET=Color.rgb(26,231,243);
+        }
+        invalidate();
+    }
+
+    private void onPearlThemeTap() {
+        long now=android.os.SystemClock.uptimeMillis();
+        pearlTapCount=(lastPearlTapMs>0 && now-lastPearlTapMs<=650L) ? pearlTapCount+1 : 1;
+        lastPearlTapMs=now;
+        if(pearlTapCount==7){
+            pearlTapCount=0;
+            applyPalette(paletteMode+1);
+            getContext().getSharedPreferences(THEME_PREFS,Context.MODE_PRIVATE)
+                .edit().putInt("palette",paletteMode).apply();
+            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        }
+    }
 
     public NeonSkinView(Context context, State state, Actions actions) {
         super(context);
         this.state=state;
         this.actions=actions;
+        applyPalette(context.getSharedPreferences(THEME_PREFS,Context.MODE_PRIVATE).getInt("palette",0));
         setLayerType(View.LAYER_TYPE_SOFTWARE,null);
         setClickable(true);
         setFocusable(true);
-        setContentDescription("P.T. Architech Neon Walkman. Left minus and right plus control media volume. Center playback, previous, next, library, lyrics and shuffle.");
+        setContentDescription("P.T. Architech Neon Walkman. Tap the track title to choose a P.T. Architech track. Seven taps on the triangle Pearl cycle three color themes. Center play or pause, previous, next, speaker volume down and up, library, lyrics and shuffle.");
     }
     private void fill(int color) {p.reset();p.setAntiAlias(true);p.setStyle(Paint.Style.FILL);p.setColor(color);}
     private void stroke(int color,float width) {
@@ -82,6 +113,17 @@ public final class NeonSkinView extends View {
     }
     private void buttonText(Canvas c,float x,float y,String label,int color,float size) {
         text(c,label,x,y+size*.34f,size,color,true);
+    }
+    // Recognizable small-screen speaker glyph, rather than a bare plus or minus.
+    private void iconVolume(Canvas c,float x,float y,boolean louder){
+        fill(WHITE);
+        Path speaker=new Path();
+        speaker.moveTo(x-17,y-6);speaker.lineTo(x-10,y-6);
+        speaker.lineTo(x,y-14);speaker.lineTo(x,y+14);
+        speaker.lineTo(x-10,y+6);speaker.lineTo(x-17,y+6);speaker.close();
+        c.drawPath(speaker,p);
+        line(c,x+6,y,x+19,y,WHITE,2.8f);
+        if(louder)line(c,x+12.5f,y-6,x+12.5f,y+6,WHITE,2.8f);
     }
     private void skyline(Canvas c) {
         // Ink-blue Brooklyn/DUMBO silhouette and sunset. Deliberately schematic.
@@ -159,7 +201,7 @@ public final class NeonSkinView extends View {
         text(canvas,"W A L K M A N",216,175,17,ORANGE,true);
         line(canvas,40,165,103,165,ORANGE,2);line(canvas,329,165,392,165,ORANGE,2);
         text(canvas,fit(state.title(),355,24),216,218,24,WHITE,true);
-        text(canvas,clock(state.positionMs())+" / "+clock(state.durationMs()),216,244,18,WHITE,false);
+        text(canvas,state.durationMs()<=0?"TAP TITLE TO CHOOSE":clock(state.positionMs())+" / "+clock(state.durationMs()),216,244,state.durationMs()<=0?15:18,state.durationMs()<=0?CYAN:WHITE,false);
         // Scrub bar spans 75..357; touch area expanded for small screens.
         fill(Color.rgb(20,68,86));rr.set(75,257,357,264);canvas.drawRoundRect(rr,4,4,p);
         float frac=state.durationMs()<=0?0:Math.max(0,Math.min(1,state.positionMs()/(float)state.durationMs()));
@@ -168,7 +210,7 @@ public final class NeonSkinView extends View {
         bars(canvas);
         // Five primary playback and volume controls.
         circle(canvas,52,318,30,Color.rgb(4,18,32),ORANGE);
-        buttonText(canvas,52,318,"−",WHITE,43);
+        iconVolume(canvas,52,318,false);
         circle(canvas,133,318,25,Color.rgb(4,18,32),CYAN);prev(canvas,133,WHITE);
         circle(canvas,216,318,33,Color.rgb(17,14,52),VIOLET);
         if(state.playing()){
@@ -178,7 +220,7 @@ public final class NeonSkinView extends View {
         }
         circle(canvas,299,318,25,Color.rgb(4,18,32),CYAN);next(canvas,299,WHITE);
         circle(canvas,380,318,30,Color.rgb(4,18,32),ORANGE);
-        buttonText(canvas,380,318,"+",WHITE,39);
+        iconVolume(canvas,380,318,true);
         iconLibrary(canvas);
         fill(Color.rgb(22,12,50));rr.set(134,358,297,407);canvas.drawRoundRect(rr,24,24,p);
         stroke(state.lyricsAvailable()?CYAN:VIOLET,2.5f);canvas.drawRoundRect(rr,24,24,p);
@@ -208,7 +250,9 @@ public final class NeonSkinView extends View {
     @Override public boolean performClick(){
         super.performClick();
         float x=touchX,y=touchY;
-        if(y>=244&&y<283&&x>=67&&x<=364)actions.seek(Math.max(0,Math.min(1,(x-75)/282f)));
+        if(distance(x,y,216,79)<29)onPearlThemeTap();
+        else if(y>=185&&y<244&&x>=67&&x<=365){pearlTapCount=0;actions.library();}
+        else if(y>=244&&y<283&&x>=67&&x<=364){pearlTapCount=0;actions.seek(Math.max(0,Math.min(1,(x-75)/282f)));}
         else if(distance(x,y,52,318)<36)actions.volume(-1);
         else if(distance(x,y,380,318)<36)actions.volume(1);
         else if(distance(x,y,133,318)<32)actions.previous();
